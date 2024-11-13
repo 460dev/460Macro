@@ -81,8 +81,9 @@ namespace IdleonGamingMacro
             }
 
             SetForegroundWindow(windowHandle);
-            MoveWindow(windowHandle, 0, 0, 800, 480, true);
             GetWindowRect(windowHandle, out RECT bounds);
+            MoveWindow(windowHandle, bounds.Left, bounds.Top, 800, 480, true);
+            GetWindowRect(windowHandle, out bounds);
 
             int getWindowRectCount = 0;
             int squrrielLoopCount = 0;
@@ -95,29 +96,29 @@ namespace IdleonGamingMacro
                     getWindowRectCount = 0;
                 }
 
-                ExecuteMacroProcess(bounds, gameX, gameY, gamingWidth, gamingHeight, HarvestAllImagePath, 0.7);           // Harvest all
-                bool sprinklerMaxResult = ExecuteMacroProcess(bounds, 0, 0, 800, 480, SprinklerMaxImagePath, 0.7, scale: 0.8, mouseClick: false); // Sprinkler max
+                ExecuteMacroProcess(bounds, gameX, gameY, gamingWidth, gamingHeight, HarvestAllImagePath, threshold: 0.7);           // Harvest all
+                bool sprinklerMaxResult = ExecuteMacroProcess(bounds, 0, 0, 800, 480, SprinklerMaxImagePath, threshold: 0.7, scale: 0.8, mouseClick: false); // Sprinkler max
 
                 if (!sprinklerMaxResult)
                 {
-                    ExecuteMacroProcess(bounds, gameX, gameY, gamingWidth, gamingHeight, ChemicalImagePath, 0.4, scale: 0.9); // Chemical
+                    ExecuteMacroProcess(bounds, gameX, gameY, gamingWidth, gamingHeight, ChemicalImagePath, threshold: 0.35, scale: 0.9); // Chemical
                 }
 
-                bool number2020Result = ExecuteMacroProcess(bounds, gameX, gameY, gamingWidth, gamingHeight, Number2020ImagePath, 0.9, mouseClick: false); // 2020 number
+                bool number2020Result = ExecuteMacroProcess(bounds, gameX, gameY, gamingWidth, gamingHeight, Number2020ImagePath, threshold: 0.9, mouseClick: false); // 2020 number
 
                 if (!number2020Result)
                 {
-                    ExecuteMacroProcess(bounds, gameX, gameY, gamingWidth, gamingHeight, SprinklerImagePath, 0.7); // Sprinkler
+                    ExecuteMacroProcess(bounds, gameX, gameY, gamingWidth, gamingHeight, SprinklerImagePath, threshold: 0.7); // Sprinkler
                 }
                 
                 if (squrrielLoopCount > 10)
                 {
-                    bool squirrelResult = ExecuteMacroProcess(bounds, gameX, gameY, gamingWidth, gamingHeight, SquirrelImagePath, 0.5);     // Squirrel
+                    bool squirrelResult = ExecuteMacroProcess(bounds, gameX, gameY, gamingWidth, gamingHeight, SquirrelImagePath, threshold: 0.5);     // Squirrel
                     squrrielLoopCount = 0;
                 }
 
-                ExecuteMacroProcess(bounds, 527, 326, 69, 69, ShovelNoEffectImagePath, 0.5); // Shovel
-                ExecuteMacroProcess(bounds, gameX, gameY, gamingWidth, gamingHeight, CancelBottunImagePath, 0.8);   // Cancel button
+                ExecuteMacroProcess(bounds, 527, 326, 69, 69, ShovelNoEffectImagePath, threshold: 0.5); // Shovel
+                ExecuteMacroProcess(bounds, gameX, gameY, gamingWidth, gamingHeight, CancelBottunImagePath, threshold: 0.8);   // Cancel button
 
                 getWindowRectCount++;
                 squrrielLoopCount++;
