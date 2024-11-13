@@ -12,6 +12,7 @@
 
   <ItemGroup>
     <None Remove="Images\20_20.png" />
+    <None Remove="Images\cancel_button.png" />
     <None Remove="Images\chemical.png" />
     <None Remove="Images\chemical_transparent.png" />
     <None Remove="Images\harvest_all.png" />
@@ -23,6 +24,9 @@
 
   <ItemGroup>
     <Content Include="Images\20_20.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\cancel_button.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Images\chemical.png">
