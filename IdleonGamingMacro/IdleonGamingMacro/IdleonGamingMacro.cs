@@ -71,6 +71,8 @@ namespace IdleonGamingMacro
             Console.WriteLine("[IdleonGaming] IdleonGaming開始");
             LogControlHelper.infoLog("[IdleonGaming] IdleonGaming開始");
 
+            Console.WriteLine("[IdleonGaming] 終了する場合はコンソールを閉じてください。");
+
             IntPtr windowHandle = FindWindow(null, WindowTitle);
             if (windowHandle == IntPtr.Zero)
             {
@@ -82,8 +84,18 @@ namespace IdleonGamingMacro
             MoveWindow(windowHandle, 0, 0, 800, 480, true);
             GetWindowRect(windowHandle, out RECT bounds);
 
+            int getWindowRectCount = 0;
+            int squrrielLoopCount = 0;
+
             while (true)
             {
+                if (getWindowRectCount > 10)
+                {
+                    GetWindowRect(windowHandle, out bounds);
+                    getWindowRectCount = 0;
+                }
+
+                GetWindowRect(windowHandle, out bounds);
                 ExecuteMacroProcess(bounds, gameX, gameY, gamingWidth, gamingHeight, HarvestAllImagePath, 0.7);           // Harvest all
                 bool sprinklerMaxResult = ExecuteMacroProcess(bounds, 0, 0, 800, 480, SprinklerMaxImagePath, 0.7, scale: 0.8, mouseClick: false); // Sprinkler max
 
@@ -98,17 +110,25 @@ namespace IdleonGamingMacro
                 {
                     ExecuteMacroProcess(bounds, gameX, gameY, gamingWidth, gamingHeight, SprinklerImagePath, 0.7); // Sprinkler
                 }
+                
+                if (squrrielLoopCount > 10)
+                {
+                    bool squirrelResult = ExecuteMacroProcess(bounds, gameX, gameY, gamingWidth, gamingHeight, SquirrelImagePath, 0.5);     // Squirrel
+                    squrrielLoopCount = 0;
+                }
 
-                ExecuteMacroProcess(bounds, gameX, gameY, gamingWidth, gamingHeight, SquirrelImagePath, 0.5);     // Squirrel
-                ExecuteMacroProcess(bounds, 527, 326, 69, 69, ShovelNoEffectImagePath, 0.5); // Shovel
+                // ExecuteMacroProcess(bounds, 527, 326, 69, 69, ShovelNoEffectImagePath, 0.5); // Shovel
                 ExecuteMacroProcess(bounds, gameX, gameY, gamingWidth, gamingHeight, CancelBottunImagePath, 0.8);   // Cancel button
+
+                getWindowRectCount++;
+                squrrielLoopCount++;
 
                 LogControlHelper.debugLog("[IdleonGaming] 0.1秒待機");
                 Thread.Sleep(100);
             }
         }
 
-        private static bool MacroProcess(Rect targetRect, string imagePath, ComparisonImageOption imageOption, bool mouseClick = true)
+        private static bool MacroProcess(RECT bounds, Rect targetRect, string imagePath, ComparisonImageOption imageOption, bool mouseClick = true)
         {
             ReferenceImage referenceImage = new(imagePath);
             CroppedImage croppedImage = new(targetRect.X, targetRect.Y, targetRect.Width, targetRect.Height);
@@ -125,7 +145,7 @@ namespace IdleonGamingMacro
                 LogControlHelper.debugLog($"[IdleonGaming] x: {centerX}, y: {centerY}");
 
                 // 左下をクリックしないようにする
-                if (centerX >= 30 && centerX <= 135 && centerY >= 310)
+                if (centerX >= bounds.Left + 30 && centerX <= bounds.Left + 135 && centerY >= bounds.Top + 310 && centerY <= bounds.Top + 390)
                 {
                     return false;
                 }
@@ -137,7 +157,7 @@ namespace IdleonGamingMacro
                     //MouseClicker.ClickAt(centerX, centerY);
 
                     // バックグラウンドでクリックする
-                    SendClickToWindowAsync(WindowTitle, centerX, centerY).ConfigureAwait(true);
+                    SendClickToWindowAsync(WindowTitle, centerX - bounds.Left, centerY - bounds.Top).ConfigureAwait(true);
                     LogControlHelper.debugLog($"[IdleonGaming] 座標 ({centerX}, {centerY}) をクリックしました。");
                 }
 
@@ -161,7 +181,7 @@ namespace IdleonGamingMacro
             );
 
             ComparisonImageOption imageOption = new(threshold: threshold, scale: scale);
-            return MacroProcess(targetRect, imagePath, imageOption, mouseClick);
+            return MacroProcess(bounds, targetRect, imagePath, imageOption, mouseClick);
         }
 
         // 特定のウィンドウにクリックイベントを送るメソッド

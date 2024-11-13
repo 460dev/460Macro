@@ -28,9 +28,6 @@ namespace IdleonGamingMacro.Models
                 g.CopyFromScreen(captureX, captureY, 0, 0, new System.Drawing.Size(captureWidth, captureHeight), CopyPixelOperation.SourceCopy);
             }
 
-            // BitmapをMatに変換
-            Mat matImage = OpenCvSharp.Extensions.BitmapConverter.ToMat(screenshot);
-
             //// デバッグ表示
             //DebugOverlay.DrawDebugRectangle(captureX, captureY, captureWidth, captureHeight);
 
