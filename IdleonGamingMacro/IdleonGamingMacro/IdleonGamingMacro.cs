@@ -95,7 +95,6 @@ namespace IdleonGamingMacro
                     getWindowRectCount = 0;
                 }
 
-                GetWindowRect(windowHandle, out bounds);
                 ExecuteMacroProcess(bounds, gameX, gameY, gamingWidth, gamingHeight, HarvestAllImagePath, 0.7);           // Harvest all
                 bool sprinklerMaxResult = ExecuteMacroProcess(bounds, 0, 0, 800, 480, SprinklerMaxImagePath, 0.7, scale: 0.8, mouseClick: false); // Sprinkler max
 
@@ -117,7 +116,7 @@ namespace IdleonGamingMacro
                     squrrielLoopCount = 0;
                 }
 
-                // ExecuteMacroProcess(bounds, 527, 326, 69, 69, ShovelNoEffectImagePath, 0.5); // Shovel
+                ExecuteMacroProcess(bounds, 527, 326, 69, 69, ShovelNoEffectImagePath, 0.5); // Shovel
                 ExecuteMacroProcess(bounds, gameX, gameY, gamingWidth, gamingHeight, CancelBottunImagePath, 0.8);   // Cancel button
 
                 getWindowRectCount++;
