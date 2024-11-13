@@ -44,6 +44,11 @@ namespace IdleonGamingMacro
         private const string SquirrelImagePath = "squirrel_transparent.png";
         private const string CancelBottunImagePath = "cancel_button.png";
 
+        private const int gameX = 6;
+        private const int gameY = 37;
+        private const int gamingWidth = 600;
+        private const int gamingHeight = 400;
+
         [StructLayout(LayoutKind.Sequential)]
         public struct RECT
         {
@@ -66,152 +71,41 @@ namespace IdleonGamingMacro
             Console.WriteLine("[IdleonGaming] IdleonGaming開始");
             LogControlHelper.infoLog("[IdleonGaming] IdleonGaming開始");
 
-            Console.WriteLine("[IdleonGaming] 終了する場合はコンソールを閉じてください");
-
-            // ウィンドウタイトルを指定してウィンドウハンドルを探す
             IntPtr windowHandle = FindWindow(null, WindowTitle);
-
             if (windowHandle == IntPtr.Zero)
             {
                 LogControlHelper.debugLog("[IdleonGaming] Windowが見つかりませんでした。");
                 return;
             }
 
-            // ウィンドウをアクティブにする
             SetForegroundWindow(windowHandle);
-            LogControlHelper.debugLog("[IdleonGaming] ウィンドウをアクティブにしました。");
-
-            // ウィンドウの位置とサイズを設定
             MoveWindow(windowHandle, 0, 0, 800, 480, true);
-            LogControlHelper.debugLog("[IdleonGaming] ウィンドウの位置とサイズを設定しました。");
-
-            // ウィンドウの位置とサイズを取得
-            if (GetWindowRect(windowHandle, out RECT bounds))
-            {
-                LogControlHelper.debugLog("[IdleonGaming] ウィンドウの位置とサイズを取得しました。");
-                LogControlHelper.debugLog($"[IdleonGaming] x: {bounds.Left}, y: {bounds.Top}");
-                LogControlHelper.debugLog($"[IdleonGaming] width: {bounds.Right - bounds.Left}, height: {bounds.Bottom - bounds.Top}");
-            }
-            else
-            {
-                LogControlHelper.debugLog("[IdleonGaming] ウィンドウの位置とサイズの取得に失敗しました。");
-            }
+            GetWindowRect(windowHandle, out RECT bounds);
 
             while (true)
             {
-                #region harvest all 
-                Rect targetHarvestAllRect = new Rect
-                (
-                    X: bounds.Left + 533,
-                    Y: bounds.Top + 41,
-                    Width: 81,
-                    Height: 23
-                );
-                ComparisonImageOption harvestImageOption = new(threshold: 0.5);
-
-                var processResult = MacroProcess(targetHarvestAllRect, HarvestAllImagePath, harvestImageOption);
-                #endregion
-
-                #region sprinkler max
-                Rect targetSprinklerMaxRect = new Rect
-                (
-                    X: bounds.Left + 92,
-                    Y: bounds.Top + 45,
-                    Width: 52,
-                    Height: 16
-                );
-                ComparisonImageOption sprinklerMaxImageOption = new(threshold: 0.5, scale: 0.8);
-
-                var sprinklerMaxResult = MacroProcess(targetSprinklerMaxRect, SprinklerMaxImagePath, sprinklerMaxImageOption, mouseClick: false);
+                ExecuteMacroProcess(bounds, gameX, gameY, gamingWidth, gamingHeight, HarvestAllImagePath, 0.7);           // Harvest all
+                bool sprinklerMaxResult = ExecuteMacroProcess(bounds, 0, 0, 800, 480, SprinklerMaxImagePath, 0.7, scale: 0.8, mouseClick: false); // Sprinkler max
 
                 if (!sprinklerMaxResult)
                 {
-                    #region chemical
-                    Rect targetChemicalRect = new Rect(
-                        X: bounds.Left + 27,
-                        Y: bounds.Top + 36,
-                        Width: 583,
-                        Height: 364
-                    );
-                    ComparisonImageOption chemicalImageOption = new(threshold: 0.4, scale: 0.9);
-
-                    var chemicalResult = MacroProcess(targetChemicalRect, ChemicalImagePath, chemicalImageOption);
-                    #endregion
+                    ExecuteMacroProcess(bounds, gameX, gameY, gamingWidth, gamingHeight, ChemicalImagePath, 0.4, scale: 0.9); // Chemical
                 }
-                #endregion
 
-                #region 2020
-                Rect target2020Rect = new Rect
-                (
-                    X: bounds.Left + 49,
-                    Y: bounds.Top + 47,
-                    Width: 38,
-                    Height: 14
-                );
-                ComparisonImageOption number2020ImageOption = new(threshold: 0.9);
-
-                var number2020Result = MacroProcess(target2020Rect, Number2020ImagePath, number2020ImageOption, mouseClick: false);
+                bool number2020Result = ExecuteMacroProcess(bounds, gameX, gameY, gamingWidth, gamingHeight, Number2020ImagePath, 0.9, mouseClick: false); // 2020 number
 
                 if (!number2020Result)
                 {
-                    #region sprinkler
-                    Rect targetSprinklerRect = new Rect(
-                        X: bounds.Left + 529,
-                        Y: bounds.Top + 76,
-                        Width: 68,
-                        Height: 52
-                    );
-                    ComparisonImageOption sprinklerImageOption = new(threshold: 0.5);
-
-                    var sprinklerResult = MacroProcess(targetSprinklerRect, SprinklerImagePath, sprinklerImageOption);
-                    #endregion
+                    ExecuteMacroProcess(bounds, gameX, gameY, gamingWidth, gamingHeight, SprinklerImagePath, 0.7); // Sprinkler
                 }
-                #endregion
 
-                #region squirrel
-                Rect targetSquirrelRect = new Rect
-                (
-                    X: bounds.Left + 31,
-                    Y: bounds.Top + 59,
-                    Width: 575,
-                    Height: 199
-                );
-                ComparisonImageOption squirrelImageOption = new(threshold: 0.25);
+                ExecuteMacroProcess(bounds, gameX, gameY, gamingWidth, gamingHeight, SquirrelImagePath, 0.5);     // Squirrel
+                ExecuteMacroProcess(bounds, 527, 326, 69, 69, ShovelNoEffectImagePath, 0.5); // Shovel
+                ExecuteMacroProcess(bounds, gameX, gameY, gamingWidth, gamingHeight, CancelBottunImagePath, 0.8);   // Cancel button
 
-                var squirrelResult = MacroProcess(targetSquirrelRect, SquirrelImagePath, squirrelImageOption);
-                #endregion
-
-                #region shovel
-                Rect targetShovelRect = new Rect
-                (
-                    X: bounds.Left + 527,
-                    Y: bounds.Top + 326,
-                    Width: 69,
-                    Height: 69
-                );
-                ComparisonImageOption shovelImageOption = new(threshold: 0.5);
-
-                var shovelResult = MacroProcess(targetShovelRect, ShovelNoEffectImagePath, shovelImageOption);
-                #endregion
-
-                #region dangeon cancel button
-                Rect targetCancelButtonRect = new Rect
-                (
-                    X: bounds.Left + 26,
-                    Y: bounds.Top + 267,
-                    Width: 25,
-                    Height: 15
-                );
-                ComparisonImageOption cancelButtonImageOption = new(threshold: 0.8);
-
-                var cancelButtonResult = MacroProcess(targetCancelButtonRect, CancelBottunImagePath, cancelButtonImageOption);
-                #endregion
-
-                // 待機
                 LogControlHelper.debugLog("[IdleonGaming] 0.1秒待機");
                 Thread.Sleep(100);
             }
-
         }
 
         private static bool MacroProcess(Rect targetRect, string imagePath, ComparisonImageOption imageOption, bool mouseClick = true)
@@ -226,9 +120,15 @@ namespace IdleonGamingMacro
             {
                 // 中心座標を計算
                 LogControlHelper.debugLog("[IdleonGaming] " + imagePath + " が見つかりました。");
-                var centerX = targetRect.X + (resultMat.ImageRect.X + resultMat.ImageRect.Width) / 2;
-                var centerY = targetRect.Y + (resultMat.ImageRect.Y + resultMat.ImageRect.Height) / 2;
+                var centerX = targetRect.X + (resultMat.ImageRect.X + (resultMat.ImageRect.Width / 2));
+                var centerY = targetRect.Y + (resultMat.ImageRect.Y + (resultMat.ImageRect.Height / 2));
                 LogControlHelper.debugLog($"[IdleonGaming] x: {centerX}, y: {centerY}");
+
+                // 左下をクリックしないようにする
+                if (centerX >= 30 && centerX <= 135 && centerY >= 310)
+                {
+                    return false;
+                }
 
                 // クリック有効だったら
                 if (mouseClick)
@@ -249,6 +149,19 @@ namespace IdleonGamingMacro
 
                 return false;
             }
+        }
+
+        private static bool ExecuteMacroProcess(RECT bounds, int offsetX, int offsetY, int width, int height, string imagePath, double threshold, double scale = 1.0, bool mouseClick = true)
+        {
+            Rect targetRect = new Rect(
+                X: bounds.Left + offsetX,
+                Y: bounds.Top + offsetY,
+                Width: width,
+                Height: height
+            );
+
+            ComparisonImageOption imageOption = new(threshold: threshold, scale: scale);
+            return MacroProcess(targetRect, imagePath, imageOption, mouseClick);
         }
 
         // 特定のウィンドウにクリックイベントを送るメソッド
