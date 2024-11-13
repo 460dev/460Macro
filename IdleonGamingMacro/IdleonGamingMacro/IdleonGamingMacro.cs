@@ -42,6 +42,7 @@ namespace IdleonGamingMacro
         private const string SprinklerImagePath = "sprinkler.png";
         private const string ShovelNoEffectImagePath = "shovel_no_effect.png";
         private const string SquirrelImagePath = "squirrel_transparent.png";
+        private const string CancelBottunImagePath = "cancel_button.png";
 
         [StructLayout(LayoutKind.Sequential)]
         public struct RECT
@@ -98,6 +99,7 @@ namespace IdleonGamingMacro
 
             while (true)
             {
+                #region harvest all 
                 Rect targetHarvestAllRect = new Rect
                 (
                     X: bounds.Left + 533,
@@ -105,9 +107,12 @@ namespace IdleonGamingMacro
                     Width: 81,
                     Height: 23
                 );
+                ComparisonImageOption harvestImageOption = new(threshold: 0.5);
 
-                var processResult = MacroProcess(targetHarvestAllRect, HarvestAllImagePath, 0.5);
+                var processResult = MacroProcess(targetHarvestAllRect, HarvestAllImagePath, harvestImageOption);
+                #endregion
 
+                #region sprinkler max
                 Rect targetSprinklerMaxRect = new Rect
                 (
                     X: bounds.Left + 92,
@@ -115,21 +120,27 @@ namespace IdleonGamingMacro
                     Width: 52,
                     Height: 16
                 );
+                ComparisonImageOption sprinklerMaxImageOption = new(threshold: 0.5, scale: 0.8);
 
-                var sprinklerMaxResult = MacroProcess(targetSprinklerMaxRect, SprinklerMaxImagePath, threshold: 0.5, scale: 0.80, mouseClick: false);
+                var sprinklerMaxResult = MacroProcess(targetSprinklerMaxRect, SprinklerMaxImagePath, sprinklerMaxImageOption, mouseClick: false);
 
                 if (!sprinklerMaxResult)
                 {
+                    #region chemical
                     Rect targetChemicalRect = new Rect(
                         X: bounds.Left + 27,
                         Y: bounds.Top + 36,
                         Width: 583,
                         Height: 364
                     );
+                    ComparisonImageOption chemicalImageOption = new(threshold: 0.4, scale: 0.9);
 
-                    var chemicalResult = MacroProcess(targetChemicalRect, ChemicalImagePath, threshold: 0.4, scale: 0.90, noiseCancellation: true, edge: true);
+                    var chemicalResult = MacroProcess(targetChemicalRect, ChemicalImagePath, chemicalImageOption);
+                    #endregion
                 }
+                #endregion
 
+                #region 2020
                 Rect target2020Rect = new Rect
                 (
                     X: bounds.Left + 49,
@@ -137,21 +148,27 @@ namespace IdleonGamingMacro
                     Width: 38,
                     Height: 14
                 );
+                ComparisonImageOption number2020ImageOption = new(threshold: 0.9);
 
-                var number2020Result = MacroProcess(target2020Rect, Number2020ImagePath, 0.9, mouseClick: false);
+                var number2020Result = MacroProcess(target2020Rect, Number2020ImagePath, number2020ImageOption, mouseClick: false);
 
                 if (!number2020Result)
                 {
+                    #region sprinkler
                     Rect targetSprinklerRect = new Rect(
                         X: bounds.Left + 529,
                         Y: bounds.Top + 76,
                         Width: 68,
                         Height: 52
                     );
+                    ComparisonImageOption sprinklerImageOption = new(threshold: 0.5);
 
-                    var sprinklerResult = MacroProcess(targetSprinklerRect, SprinklerImagePath, 0.5);
+                    var sprinklerResult = MacroProcess(targetSprinklerRect, SprinklerImagePath, sprinklerImageOption);
+                    #endregion
                 }
+                #endregion
 
+                #region squirrel
                 Rect targetSquirrelRect = new Rect
                 (
                     X: bounds.Left + 31,
@@ -159,9 +176,12 @@ namespace IdleonGamingMacro
                     Width: 575,
                     Height: 199
                 );
+                ComparisonImageOption squirrelImageOption = new(threshold: 0.25);
 
-                var squirrelResult = MacroProcess(targetSquirrelRect, SquirrelImagePath, 0.25);
+                var squirrelResult = MacroProcess(targetSquirrelRect, SquirrelImagePath, squirrelImageOption);
+                #endregion
 
+                #region shovel
                 Rect targetShovelRect = new Rect
                 (
                     X: bounds.Left + 527,
@@ -169,8 +189,23 @@ namespace IdleonGamingMacro
                     Width: 69,
                     Height: 69
                 );
+                ComparisonImageOption shovelImageOption = new(threshold: 0.5);
 
-                var shovelResult = MacroProcess(targetShovelRect, ShovelNoEffectImagePath, 0.5);
+                var shovelResult = MacroProcess(targetShovelRect, ShovelNoEffectImagePath, shovelImageOption);
+                #endregion
+
+                #region dangeon cancel button
+                Rect targetCancelButtonRect = new Rect
+                (
+                    X: bounds.Left + 26,
+                    Y: bounds.Top + 267,
+                    Width: 25,
+                    Height: 15
+                );
+                ComparisonImageOption cancelButtonImageOption = new(threshold: 0.8);
+
+                var cancelButtonResult = MacroProcess(targetCancelButtonRect, CancelBottunImagePath, cancelButtonImageOption);
+                #endregion
 
                 // 待機
                 LogControlHelper.debugLog("[IdleonGaming] 0.1秒待機");
@@ -179,13 +214,13 @@ namespace IdleonGamingMacro
 
         }
 
-        private static bool MacroProcess(Rect targetRect, string imagePath, double threshold, double scale = 1.0, bool noiseCancellation = false, bool edge = false, bool mouseClick = true)
+        private static bool MacroProcess(Rect targetRect, string imagePath, ComparisonImageOption imageOption, bool mouseClick = true)
         {
             ReferenceImage referenceImage = new(imagePath);
             CroppedImage croppedImage = new(targetRect.X, targetRect.Y, targetRect.Width, targetRect.Height);
 
             var openCVSharpHelper = new OpenCVSharpHelper();
-            var resultMat = openCVSharpHelper.ComparisonImage(referenceImage.Image, croppedImage.Image, threshold, scale: scale, noiseCancellation: noiseCancellation, edge: edge);
+            var resultMat = openCVSharpHelper.ComparisonImage(referenceImage.Image, croppedImage.Image, imageOption);
 
             if (resultMat.Status)
             {
@@ -195,7 +230,7 @@ namespace IdleonGamingMacro
                 var centerY = targetRect.Y + (resultMat.ImageRect.Y + resultMat.ImageRect.Height) / 2;
                 LogControlHelper.debugLog($"[IdleonGaming] x: {centerX}, y: {centerY}");
 
-                // バックグラウンドでクリックする
+                // クリック有効だったら
                 if (mouseClick)
                 {
                     // 座標をクリックする

@@ -11,7 +11,7 @@ namespace IdleonGamingMacro.Helpers
 {
     internal class OpenCVSharpHelper
     {
-        public ImageStatus ComparisonImage(Mat templateMat, Mat targetMat, double threshold, double scale = 1.0, bool noiseCancellation = false, bool edge = false)
+        public ImageStatus ComparisonImage(Mat templateMat, Mat targetMat, ComparisonImageOption imageOption)
         {
             var imageStatus = new ImageStatus();
 
@@ -36,10 +36,10 @@ namespace IdleonGamingMacro.Helpers
             }
 
             // スケールが1.0未満の場合、縮小
-            if (scale < 1.0)
+            if (imageOption.Scale < 1.0)
             {
-                Cv2.Resize(targetMat, scaledTarget, new Size(), scale, scale, InterpolationFlags.Linear);
-                Cv2.Resize(templateMat, scaledTemplate, new Size(), scale, scale, InterpolationFlags.Linear);
+                Cv2.Resize(targetMat, scaledTarget, new Size(), imageOption.Scale, imageOption.Scale, InterpolationFlags.Linear);
+                Cv2.Resize(templateMat, scaledTemplate, new Size(), imageOption.Scale, imageOption.Scale, InterpolationFlags.Linear);
                 LogControlHelper.debugLog($"[Debug] Scaled Target Image Size: {scaledTarget.Width}x{scaledTarget.Height}");
                 LogControlHelper.debugLog($"[Debug] Scaled Template Image Size: {scaledTemplate.Width}x{scaledTemplate.Height}");
             }
@@ -59,7 +59,7 @@ namespace IdleonGamingMacro.Helpers
 
             // --- 前処理: ぼかしとエッジ検出 ---
             // ガウシアンブラーでノイズ除去
-            if (noiseCancellation)
+            if (imageOption.NoiseCancellation)
             {
                 Cv2.GaussianBlur(scaledTarget, scaledTarget, new Size(7, 7), 0);
                 Cv2.GaussianBlur(scaledTemplate, scaledTemplate, new Size(7, 7), 0);
@@ -67,7 +67,7 @@ namespace IdleonGamingMacro.Helpers
             }
 
             // Cannyエッジ検出を適用して輪郭を抽出
-            if (edge)
+            if (imageOption.Edge)
             {
                 Cv2.Canny(scaledTarget, scaledTarget, 20, 70);
                 Cv2.Canny(scaledTemplate, scaledTemplate, 20, 70);
@@ -90,13 +90,13 @@ namespace IdleonGamingMacro.Helpers
 
                 LogControlHelper.debugLog($"[Debug] Min Value: {minval}, Max Value: {maxval}");
 
-                if (maxval >= threshold)
+                if (maxval >= imageOption.Threshold)
                 {
                     LogControlHelper.debugLog("[IdleonGaming] Matched!!");
 
                     // 検出された位置を元のサイズに戻して計算
-                    int originalX = (int)(maxloc.X / scale);
-                    int originalY = (int)(maxloc.Y / scale);
+                    int originalX = (int)(maxloc.X / imageOption.Scale);
+                    int originalY = (int)(maxloc.Y / imageOption.Scale);
 
                     // 検出された位置に基づいて座標を取得
                     Rect matchRect = new Rect(originalX, originalY, templateMat.Width, templateMat.Height);
