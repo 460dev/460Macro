@@ -29,7 +29,7 @@ namespace IdleonGamingMacro.Models
             }
 
             // デバッグ表示
-            DebugOverlay.DrawDebugRectangle(captureX, captureY, captureWidth, captureHeight);
+            //DebugOverlay.DrawDebugRectangle(captureX, captureY, captureWidth, captureHeight);
 
             Image = OpenCvSharp.Extensions.BitmapConverter.ToMat(screenshot);
         }
