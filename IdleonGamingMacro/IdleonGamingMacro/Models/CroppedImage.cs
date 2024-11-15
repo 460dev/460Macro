@@ -28,8 +28,8 @@ namespace IdleonGamingMacro.Models
                 g.CopyFromScreen(captureX, captureY, 0, 0, new System.Drawing.Size(captureWidth, captureHeight), CopyPixelOperation.SourceCopy);
             }
 
-            //// デバッグ表示
-            //DebugOverlay.DrawDebugRectangle(captureX, captureY, captureWidth, captureHeight);
+            // デバッグ表示
+            DebugOverlay.DrawDebugRectangle(captureX, captureY, captureWidth, captureHeight);
 
             Image = OpenCvSharp.Extensions.BitmapConverter.ToMat(screenshot);
         }
