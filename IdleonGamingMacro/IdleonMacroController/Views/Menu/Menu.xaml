@@ -1,0 +1,26 @@
+﻿<UserControl x:Class="IdleonMacroController.Views.Menu.Menu"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:prism="http://prismlibrary.com/"             
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:menu="clr-namespace:IdleonMacroController.Views.Menu"
+             xmlns:home="clr-namespace:IdleonMacroController.Views.Home"
+             mc:Ignorable="d"
+             prism:ViewModelLocator.AutoWireViewModel="True"
+             d:DesignWidth="1280" d:DesignHeight="720">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="200"/>
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <menu:DashBoard Grid.Column="0"/>
+
+        <!-- メインコンテンツエリア (ボタンを押したら切り替わるようにする) -->
+        <ContentControl
+            Grid.Column="1"
+            prism:RegionManager.RegionName="MenuRegion" />
+        <!--<home:Home Grid.Column="1" />-->
+    </Grid>
+</UserControl>
