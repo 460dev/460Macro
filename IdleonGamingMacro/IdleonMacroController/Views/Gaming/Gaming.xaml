@@ -64,7 +64,7 @@
             Grid.Row="1"
             Grid.Column="0"
             Margin="10"
-            Command="{Binding StartStopCommand}" CommandParameter="Home">
+            Command="{Binding StartStopCommand}">
             <TextBlock Text="{Binding StartStopText.Value}" Foreground="White"/>
         </Button>
     </Grid>

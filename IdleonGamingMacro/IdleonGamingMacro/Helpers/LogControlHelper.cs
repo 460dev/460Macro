@@ -15,7 +15,7 @@ namespace IdleonGamingMacro.Helpers
     /// <summary>
     /// logファイルを操作するクラス
     /// </summary>
-    class LogControlHelper
+    public class LogControlHelper
     {
         private static Logger logger = LogManager.GetCurrentClassLogger();
         private static string _appVersion = "";

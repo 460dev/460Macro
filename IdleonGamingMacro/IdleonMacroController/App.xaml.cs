@@ -30,8 +30,8 @@ namespace IdleonMacroController
         {
             base.ConfigureViewModelLocator();
 
-            // Menu View に MenuViewModel を紐付ける
             ViewModelLocationProvider.Register<Menu, MenuViewModel>();
+            ViewModelLocationProvider.Register<Gaming, GamingViewModel>();
         }
     }
 }
