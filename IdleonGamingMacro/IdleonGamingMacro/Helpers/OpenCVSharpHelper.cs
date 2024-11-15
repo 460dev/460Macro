@@ -23,8 +23,7 @@ namespace IdleonGamingMacro.Helpers
             ReferenceImage referenceImage = new(imagePath);
             CroppedImage croppedImage = new(targetRect.X, targetRect.Y, targetRect.Width, targetRect.Height);
 
-            var openCVSharpHelper = new OpenCVSharpHelper();
-            var resultMat = openCVSharpHelper.ComparisonImage(referenceImage.Image, croppedImage.Image, imageOption);
+            var resultMat = ComparisonImage(referenceImage.Image, croppedImage.Image, imageOption);
 
             if (resultMat.Status)
             {

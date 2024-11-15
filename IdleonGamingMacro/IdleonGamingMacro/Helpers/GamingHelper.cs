@@ -79,7 +79,7 @@ namespace IdleonGamingMacro.Helpers
                 ImageResult harvestResult = CheckImageProcess(bounds, GameX, GameY, GamingWidth, GamingHeight, ImagePath.HarvestAllImagePath, threshold: 0.7);
                 if (harvestResult.Status)
                 {
-                    BackGroundMouseClicker.SendClickToWindowAsync(WindowTitle, harvestResult.X, harvestResult.Y).ConfigureAwait(false);
+                    BackGroundMouseClicker.SendClickToWindowAsync(WindowHandle, harvestResult.X - bounds.Left, harvestResult.Y - bounds.Top).ConfigureAwait(false);
                 }
 
 
@@ -89,7 +89,7 @@ namespace IdleonGamingMacro.Helpers
                     ImageResult chemicalResult = CheckImageProcess(bounds, GameX, GameY, GamingWidth, GamingHeight, ImagePath.ChemicalImagePath, threshold: 0.35, scale: 0.9); // Chemical
                     if (chemicalResult.Status)
                     {
-                        BackGroundMouseClicker.SendClickToWindowAsync(WindowTitle, chemicalResult.X, chemicalResult.Y).ConfigureAwait(false);
+                        BackGroundMouseClicker.SendClickToWindowAsync(WindowHandle, chemicalResult.X - bounds.Left, chemicalResult.Y - bounds.Top).ConfigureAwait(false);
                     }
                 }
 
@@ -99,7 +99,7 @@ namespace IdleonGamingMacro.Helpers
                     ImageResult sprinklerResult = CheckImageProcess(bounds, GameX, GameY, GamingWidth, GamingHeight, ImagePath.SprinklerImagePath, threshold: 0.7); // Sprinkler
                     if (sprinklerResult.Status)
                     {
-                        BackGroundMouseClicker.SendClickToWindowAsync(WindowTitle, sprinklerResult.X, sprinklerResult.Y).ConfigureAwait(false);
+                        BackGroundMouseClicker.SendClickToWindowAsync(WindowHandle, sprinklerResult.X - bounds.Left, sprinklerResult.Y - bounds.Top).ConfigureAwait(false);
                     }
                 }
 
@@ -108,7 +108,7 @@ namespace IdleonGamingMacro.Helpers
                     ImageResult squirrelResult = CheckImageProcess(bounds, GameX, GameY, GamingWidth, GamingHeight, ImagePath.SquirrelImagePath, threshold: 0.5);     // Squirrel
                     if (squirrelResult.Status)
                     {
-                        BackGroundMouseClicker.SendClickToWindowAsync(WindowTitle, squirrelResult.X, squirrelResult.Y).ConfigureAwait(false);
+                        BackGroundMouseClicker.SendClickToWindowAsync(WindowHandle, squirrelResult.X - bounds.Left, squirrelResult.Y - bounds.Top).ConfigureAwait(false);
                     }
                     squrrielLoopCount = 0;
                 }
@@ -116,13 +116,13 @@ namespace IdleonGamingMacro.Helpers
                 ImageResult shovelResult = CheckImageProcess(bounds, 527, 326, 69, 69, ImagePath.ShovelNoEffectImagePath, threshold: 0.5); // Shovel
                 if (shovelResult.Status)
                 {
-                    BackGroundMouseClicker.SendClickToWindowAsync(WindowTitle, shovelResult.X, shovelResult.Y).ConfigureAwait(false);
+                    BackGroundMouseClicker.SendClickToWindowAsync(WindowHandle, shovelResult.X - bounds.Left, shovelResult.Y - bounds.Top).ConfigureAwait(false);
                 }
 
                 ImageResult cancelButtonResult = CheckImageProcess(bounds, GameX, GameY, GamingWidth, GamingHeight, ImagePath.CancelBottunImagePath, threshold: 0.8);   // Cancel button
                 if (shovelResult.Status)
                 {
-                    BackGroundMouseClicker.SendClickToWindowAsync(WindowTitle, shovelResult.X, shovelResult.Y).ConfigureAwait(false);
+                    BackGroundMouseClicker.SendClickToWindowAsync(WindowHandle, shovelResult.X - bounds.Left, shovelResult.Y - bounds.Top).ConfigureAwait(false);
                 }
 
                 getWindowRectCount++;
