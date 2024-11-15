@@ -6,12 +6,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using static System.Formats.Asn1.AsnWriter;
 
 namespace IdleonGamingMacro.Helpers
 {
-    internal class GamingHelper
+    public class GamingHelper
     {
         [DllImport("user32.dll")]
         private static extern bool GetWindowRect(IntPtr hWnd, out RECT lpRect);
@@ -60,14 +61,16 @@ namespace IdleonGamingMacro.Helpers
             OpenCVSharpHelper = new OpenCVSharpHelper();
         }
 
-        public void Start()
+        private CancellationTokenSource? _cancellationTokenSource;
+
+        public void Start(CancellationToken cancellationToken)
         {
             RECT bounds = InitializeWindow();
 
             int getWindowRectCount = 0;
             int squrrielLoopCount = 0;
 
-            while (true)
+            while (!cancellationToken.IsCancellationRequested)
             {
                 if (getWindowRectCount > 10)
                 {
@@ -75,13 +78,11 @@ namespace IdleonGamingMacro.Helpers
                     getWindowRectCount = 0;
                 }
 
-
                 ImageResult harvestResult = CheckImageProcess(bounds, GameX, GameY, GamingWidth, GamingHeight, ImagePath.HarvestAllImagePath, threshold: 0.7);
                 if (harvestResult.Status)
                 {
                     BackGroundMouseClicker.SendClickToWindowAsync(WindowHandle, harvestResult.X - bounds.Left, harvestResult.Y - bounds.Top).ConfigureAwait(false);
                 }
-
 
                 ImageResult sprinklerMaxResult = CheckImageProcess(bounds, 0, 0, 800, 480, ImagePath.SprinklerMaxImagePath, threshold: 0.7, scale: 0.8); // Sprinkler max
                 if (!sprinklerMaxResult.Status)
@@ -129,8 +130,23 @@ namespace IdleonGamingMacro.Helpers
                 squrrielLoopCount++;
 
                 LogControlHelper.debugLog("[IdleonGaming] 0.1秒待機");
-                Thread.Sleep(100);
+                try
+                {
+                    Task.Delay(100, cancellationToken).Wait(); // キャンセルが通知されると即座に中断
+                }
+                catch (OperationCanceledException)
+                {
+                    // キャンセルされた場合
+                    break;
+                }
             }
+
+            LogControlHelper.debugLog("[IdleonGaming] ループを終了しました。");
+        }
+
+        public void Stop()
+        {
+            _cancellationTokenSource?.Cancel();
         }
 
         private ImageResult CheckImageProcess(RECT bounds, int offsetX, int offsetY, int width, int height, string imagePath, double threshold, double scale = 1.0)

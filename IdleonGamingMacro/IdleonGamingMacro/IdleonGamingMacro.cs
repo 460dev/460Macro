@@ -2,6 +2,7 @@
 using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
+using System.Threading;
 using IdleonGamingMacro.Events;
 using IdleonGamingMacro.Helpers;
 using IdleonGamingMacro.Models;
@@ -39,9 +40,11 @@ namespace IdleonGamingMacro
             }
 
             var gamingHelper = new GamingHelper(windowHandle: windowHandle);
-            
+
             // スタート
-            gamingHelper.Start();
+            var cancellationTokenSource = new CancellationTokenSource();
+            CancellationToken token = cancellationTokenSource.Token;
+            gamingHelper.Start(token);
         }
     }
 
