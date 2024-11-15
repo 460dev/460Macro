@@ -4,13 +4,52 @@ using OpenCvSharp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+using static System.Formats.Asn1.AsnWriter;
 
 namespace IdleonGamingMacro.Helpers
 {
     internal class OpenCVSharpHelper
     {
+        public ImageResult CheckImage(Rect targetRect, string imagePath, ComparisonImageOption imageOption, int borderLeft, int borderTop)
+        {
+            ImageResult imageResult = new()
+            {
+                Status = false
+            };
+
+            ReferenceImage referenceImage = new(imagePath);
+            CroppedImage croppedImage = new(targetRect.X, targetRect.Y, targetRect.Width, targetRect.Height);
+
+            var openCVSharpHelper = new OpenCVSharpHelper();
+            var resultMat = openCVSharpHelper.ComparisonImage(referenceImage.Image, croppedImage.Image, imageOption);
+
+            if (resultMat.Status)
+            {
+                // 中心座標を計算
+                LogControlHelper.debugLog("[IdleonGaming] " + imagePath + " が見つかりました。");
+                imageResult.X = targetRect.X + (resultMat.ImageRect.X + (resultMat.ImageRect.Width / 2));
+                imageResult.Y = targetRect.Y + (resultMat.ImageRect.Y + (resultMat.ImageRect.Height / 2));
+                LogControlHelper.debugLog($"[IdleonGaming] x: {imageResult.X}, y: {imageResult.Y}");
+
+                // 左下を検知しないようにする
+                if (imageResult.X >= borderLeft + 30 && imageResult.X <= borderLeft + 135 && imageResult.Y >= borderTop + 310 && imageResult.Y <= borderTop + 390)
+                {
+                    return imageResult;
+                }
+
+                imageResult.Status = true;
+            }
+            else
+            {
+                LogControlHelper.debugLog("[IdleonGaming] " + imagePath + " が見つかりませんでした。");
+            }
+
+            return imageResult;
+        }
+
         public ImageStatus ComparisonImage(Mat templateMat, Mat targetMat, ComparisonImageOption imageOption)
         {
             var imageStatus = new ImageStatus();

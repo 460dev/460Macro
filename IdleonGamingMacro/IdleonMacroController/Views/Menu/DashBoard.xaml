@@ -1,0 +1,44 @@
+﻿<UserControl x:Class="IdleonMacroController.Views.Menu.DashBoard"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:prism="http://prismlibrary.com/"             
+             prism:ViewModelLocator.AutoWireViewModel="True">
+    
+    <StackPanel Background="#4CAF50">
+        <!-- サイドバーのボタン -->
+        <Button
+            Command="{Binding NavigateCommand}" CommandParameter="Home"
+            HorizontalAlignment="Left" Background="Transparent" BorderBrush="Transparent" Padding="10">
+            <TextBlock Text="ホーム" Foreground="White" FontSize="16"/>
+        </Button>
+        <Button
+            Command="{Binding NavigateCommand}" CommandParameter="Gaming"
+            HorizontalAlignment="Left" Background="Transparent" BorderBrush="Transparent" Padding="10">
+            <TextBlock Text="ゲーミング" Foreground="White" FontSize="16"/>
+        </Button>
+        <Button
+            Command="{Binding NavigateCommand}" CommandParameter="Boss"
+            HorizontalAlignment="Left" Background="Transparent" BorderBrush="Transparent" Padding="10">
+            <TextBlock Text="ボス" Foreground="White" FontSize="16"/>
+        </Button>
+        <Button
+            Command="{Binding NavigateCommand}" CommandParameter="Bubble"
+            HorizontalAlignment="Left" Background="Transparent" BorderBrush="Transparent" Padding="10">
+            <TextBlock Text="錬金泡" Foreground="White" FontSize="16"/>
+        </Button>
+        <Button
+            Command="{Binding NavigateCommand}" CommandParameter="Shop"
+            HorizontalAlignment="Left" Background="Transparent" BorderBrush="Transparent" Padding="10">
+            <TextBlock Text="店デイリー購入" Foreground="White" FontSize="16"/>
+        </Button>
+        <!--<Button HorizontalAlignment="Left" Background="Transparent" BorderBrush="Transparent" Padding="10">
+            <TextBlock Text="..." Foreground="White" FontSize="16"/>
+        </Button>-->
+        <!-- 設定ボタン（下部に配置） -->
+        <StackPanel VerticalAlignment="Bottom">
+            <Button HorizontalAlignment="Left" Background="Transparent" BorderBrush="Transparent" Padding="10">
+                <TextBlock Text="設定" Foreground="White" FontSize="16"/>
+            </Button>
+        </StackPanel>
+    </StackPanel>
+</UserControl>
