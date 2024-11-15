@@ -121,9 +121,9 @@ namespace IdleonGamingMacro.Helpers
                 }
 
                 ImageResult cancelButtonResult = CheckImageProcess(bounds, GameX, GameY, GamingWidth, GamingHeight, ImagePath.CancelBottunImagePath, threshold: 0.8);   // Cancel button
-                if (shovelResult.Status)
+                if (cancelButtonResult.Status)
                 {
-                    BackGroundMouseClicker.SendClickToWindowAsync(WindowHandle, shovelResult.X - bounds.Left, shovelResult.Y - bounds.Top).ConfigureAwait(false);
+                    BackGroundMouseClicker.SendClickToWindowAsync(WindowHandle, cancelButtonResult.X - bounds.Left, cancelButtonResult.Y - bounds.Top).ConfigureAwait(false);
                 }
 
                 getWindowRectCount++;
