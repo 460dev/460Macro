@@ -16,8 +16,13 @@ namespace IdleonGamingMacro
         /// </summary>
         public static string GetCurrentAppDir()
         {
-            String path = Path.GetDirectoryName(
-                System.Reflection.Assembly.GetExecutingAssembly().Location);
+            string? path = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
+
+            // null対策としてフォールバックを用意
+            if (string.IsNullOrEmpty(path))
+            {
+                throw new InvalidOperationException("アプリケーションディレクトリを取得できませんでした。");
+            }
 
             return path;
         }

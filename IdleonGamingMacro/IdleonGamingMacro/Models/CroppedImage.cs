@@ -16,6 +16,8 @@ namespace IdleonGamingMacro.Models
     internal class CroppedImage
     {
         public Mat Image { get; private set; }
+        public int X { get; private set; }
+        public int Y { get; private set; }
 
         public CroppedImage(int captureX, int captureY, int captureWidth, int captureHeight)
         {
@@ -28,10 +30,9 @@ namespace IdleonGamingMacro.Models
                 g.CopyFromScreen(captureX, captureY, 0, 0, new System.Drawing.Size(captureWidth, captureHeight), CopyPixelOperation.SourceCopy);
             }
 
-            // デバッグ表示
-            //DebugOverlay.DrawDebugRectangle(captureX, captureY, captureWidth, captureHeight);
-
             Image = OpenCvSharp.Extensions.BitmapConverter.ToMat(screenshot);
+            X = captureX;
+            Y = captureY;
         }
 
         // 画像を解放するメソッド

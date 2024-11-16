@@ -12,7 +12,7 @@ namespace IdleonGamingMacro.Models
     {
         private readonly string _imagePath;
 
-        public Mat Image { get; private set; }
+        public Mat Image { get; private set; } = new Mat();
 
         public ReferenceImage(string fileName)
         {

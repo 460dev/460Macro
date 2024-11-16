@@ -9,14 +9,17 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 
+#nullable enable
+
 namespace IdleonMacroController.ViewModels
 {
     public class GamingViewModel : BindableBase
     {
+
         [DllImport("user32.dll")]
         private static extern IntPtr FindWindow(string? lpClassName, string lpWindowName);
 
-        public const string WindowTitle = "Legends Of Idleon"; // 定数
+        public const string WindowTitle = "Legends Of Idleon";
 
         public DelegateCommand StartStopCommand { get; private set; }
 
@@ -24,7 +27,7 @@ namespace IdleonMacroController.ViewModels
 
         public ReactiveProperty<bool> IsRunning { get; set; } = new ReactiveProperty<bool>(false);
 
-        private GamingHelper GamingHelper;
+        public ReactiveProperty<bool> IsPreview { get; set; } = new ReactiveProperty<bool>(false);
 
         private CancellationTokenSource? _cancellationTokenSource;
 
@@ -42,27 +45,50 @@ namespace IdleonMacroController.ViewModels
                 return;
             }
 
-            if (GamingHelper == null)
-            {
-                GamingHelper = new GamingHelper(windowHandle: windowHandle);
-            }
-
             if (IsRunning.Value)
             {
                 // Stop処理
-                GamingHelper.Stop();
-                _cancellationTokenSource?.Cancel(); // キャンセルを通知
+                LogControlHelper.debugLog("[IdleonGaming] 停止します...");
+
+                // GamingHelperの停止処理と解放
+                using (var gamingHelper = new GamingHelper(windowHandle))
+                {
+                    gamingHelper.Stop();
+                }
+
+                // キャンセル通知
+                _cancellationTokenSource?.Cancel();
+                _cancellationTokenSource?.Dispose(); // トークンソースを解放
+                _cancellationTokenSource = null;
+
                 LogControlHelper.debugLog("[IdleonGaming] 停止しました。");
                 StartStopText.Value = "Start";
             }
             else
             {
                 // Start処理
+                LogControlHelper.debugLog("[IdleonGaming] 開始します...");
+
                 _cancellationTokenSource = new CancellationTokenSource();
+
+                // 毎回新しいGamingHelperインスタンスを生成
+                var gamingHelper = new GamingHelper(windowHandle);
+
                 CancellationToken token = _cancellationTokenSource.Token;
 
+                Task.Run(() =>
+                {
+                    try
+                    {
+                        gamingHelper.Start(token);
+                    }
+                    finally
+                    {
+                        // 使用後にリソース解放
+                        gamingHelper.Dispose();
+                    }
+                });
 
-                Task.Run(() => GamingHelper.Start(token));
                 LogControlHelper.debugLog("[IdleonGaming] 開始しました。");
                 StartStopText.Value = "Stop";
             }
@@ -72,3 +98,5 @@ namespace IdleonMacroController.ViewModels
         }
     }
 }
+
+#nullable restore
