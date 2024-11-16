@@ -65,12 +65,4 @@
     </None>
   </ItemGroup>
 
-  <ItemGroup>
-    <EditorConfigFiles Remove="D:\Dev\Idleon\Src\IdleonMacroProject\IdleonGamingMacro\IdleonGamingMacro\.editorconfig" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="D:\Dev\Idleon\Src\IdleonMacroProject\IdleonGamingMacro\IdleonGamingMacro\.editorconfig" />
-  </ItemGroup>
-
 </Project>
