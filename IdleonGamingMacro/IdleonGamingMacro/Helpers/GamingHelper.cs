@@ -12,7 +12,7 @@ using static System.Formats.Asn1.AsnWriter;
 
 namespace IdleonGamingMacro.Helpers
 {
-    public class GamingHelper
+    public class GamingHelper : IDisposable
     {
         [DllImport("user32.dll")]
         private static extern bool GetWindowRect(IntPtr hWnd, out RECT lpRect);
@@ -61,9 +61,13 @@ namespace IdleonGamingMacro.Helpers
             OpenCVSharpHelper = new OpenCVSharpHelper();
         }
 
+#nullable enable
         private CancellationTokenSource? _cancellationTokenSource;
+#nullable disable
 
-        public void Start(CancellationToken cancellationToken)
+        private bool _disposed = false;
+
+        public void Start(CancellationToken cancellationToken, bool isOverLay = false)
         {
             RECT bounds = InitializeWindow();
 
@@ -171,6 +175,43 @@ namespace IdleonGamingMacro.Helpers
             GetWindowRect(WindowHandle, out bounds);
 
             return bounds;
+        }
+
+        /// <summary>
+        /// リソースを解放します。
+        /// </summary>
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// リソース解放処理。
+        /// </summary>
+        /// <param name="disposing">マネージドリソースを解放するかどうか。</param>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!_disposed)
+            {
+                if (disposing)
+                {
+                    // マネージドリソースの解放
+                    _cancellationTokenSource?.Cancel();
+                    _cancellationTokenSource?.Dispose();
+                    _cancellationTokenSource = null;
+                }
+
+                // アンマネージリソースの解放（必要に応じて実装）
+                WindowHandle = IntPtr.Zero;
+
+                _disposed = true;
+            }
+        }
+
+        ~GamingHelper()
+        {
+            Dispose(false);
         }
     }
 }
