@@ -5,4 +5,4 @@
 
 using System.Diagnostics.CodeAnalysis;
 
-[assembly: SuppressMessage("Interoperability", "CA1416:プラットフォームの互換性を検証", Justification = "<保留中>", Scope = "member", Target = "~M:IdleonGamingMacro.Models.CroppedImage.#ctor(System.Int32,System.Int32,System.Int32,System.Int32)")]
+[assembly: SuppressMessage("Interoperability", "CA1416:プラットフォームの互換性を検証", Justification = "<保留中>", Scope = "member", Target = "~M:ProcessBase.Models.CroppedImage.#ctor(System.Int32,System.Int32,System.Int32,System.Int32)")]

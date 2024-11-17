@@ -6,12 +6,10 @@ using System.Threading.Tasks;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Diagnostics;
-using NLog;
-using NLog.Config;
-using NLog.Targets;
 using System.Reflection;
+using NLog;
 
-namespace IdleonGamingMacro.Helpers
+namespace ProcessBase.Helpers
 {
     /// <summary>
     /// logファイルを操作するクラス

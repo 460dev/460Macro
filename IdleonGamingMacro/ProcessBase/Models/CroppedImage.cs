@@ -8,12 +8,12 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Diagnostics;
-using IdleonGamingMacro.Events;
-using IdleonGamingMacro.Helpers;
+using ProcessBase.Events;
+using ProcessBase.Helpers;
 
-namespace IdleonGamingMacro.Models
+namespace ProcessBase.Models
 {
-    internal class CroppedImage
+    public class CroppedImage
     {
         public Mat Image { get; private set; }
         public int X { get; private set; }

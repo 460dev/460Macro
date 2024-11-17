@@ -1,8 +1,8 @@
 ﻿using OpenCvSharp;
 
-namespace IdleonGamingMacro.Models
+namespace ProcessBase.Models
 {
-    internal class ImageStatus
+    public class ImageStatus
     {
         public ImageStatus()
         {
