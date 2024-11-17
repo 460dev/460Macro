@@ -1,12 +1,12 @@
-﻿using IdleonGamingMacro.Events;
-using IdleonGamingMacro.Models;
+﻿using ProcessBase.Events;
+using ProcessBase.Models;
 using OpenCvSharp;
 
 #pragma warning disable CA1416
 
-namespace IdleonGamingMacro.Helpers
+namespace ProcessBase.Helpers
 {
-    internal class OpenCVSharpHelper
+    public class OpenCVSharpHelper
     {
         public ImageResult CheckImage(Rect targetRect, string imagePath, ComparisonImageOption imageOption, int borderLeft, int borderTop, bool isOverlay = false)
         {

@@ -1,5 +1,5 @@
-﻿using IdleonGamingMacro.Events;
-using IdleonGamingMacro.Models;
+﻿using ProcessBase.Events;
+using ProcessBase.Models;
 using OpenCvSharp;
 using System;
 using System.Collections.Generic;
@@ -10,28 +10,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using static System.Formats.Asn1.AsnWriter;
 
-namespace IdleonGamingMacro.Helpers
+namespace ProcessBase.Helpers
 {
     public class GamingHelper : IDisposable
     {
-        [DllImport("user32.dll")]
-        private static extern bool GetWindowRect(IntPtr hWnd, out RECT lpRect);
-
-        [StructLayout(LayoutKind.Sequential)]
-        public struct RECT
-        {
-            public int Left;
-            public int Top;
-            public int Right;
-            public int Bottom;
-        }
-
-        [DllImport("user32.dll")]
-        private static extern bool SetForegroundWindow(IntPtr hWnd);
-
-        [DllImport("user32.dll")]
-        private static extern bool MoveWindow(IntPtr hWnd, int x, int y, int nWidth, int nHeight, bool bRepaint);
-
         public struct ImagePath
         {
             public const string HarvestAllImagePath = "harvest_all.png";
@@ -68,7 +50,7 @@ namespace IdleonGamingMacro.Helpers
 
         public void Start(CancellationToken cancellationToken, bool isOverlay = false)
         {
-            RECT bounds = InitializeWindow();
+            WindowAPIHelper.RECT bounds = InitializeWindow();
 
             int getWindowRectCount = 0;
             int squrrielLoopCount = 0;
@@ -77,7 +59,7 @@ namespace IdleonGamingMacro.Helpers
             {
                 if (getWindowRectCount > 10)
                 {
-                    GetWindowRect(WindowHandle, out bounds);
+                    WindowAPIHelper.GetWindowRect(WindowHandle, out bounds);
                     getWindowRectCount = 0;
                 }
 
@@ -152,7 +134,7 @@ namespace IdleonGamingMacro.Helpers
             _cancellationTokenSource?.Cancel();
         }
 
-        private ImageResult CheckImageProcess(RECT bounds, int offsetX, int offsetY, int width, int height, string imagePath, double threshold, double scale = 1.0, bool isOverlay = false)
+        private ImageResult CheckImageProcess(WindowAPIHelper.RECT bounds, int offsetX, int offsetY, int width, int height, string imagePath, double threshold, double scale = 1.0, bool isOverlay = false)
         {
             Rect targetRect = new Rect(
                 X: bounds.Left + offsetX,
@@ -166,12 +148,12 @@ namespace IdleonGamingMacro.Helpers
             return OpenCVSharpHelper.CheckImage(targetRect, imagePath, imageOption, bounds.Left, bounds.Top, isOverlay);
         }
 
-        private RECT InitializeWindow()
+        private WindowAPIHelper.RECT InitializeWindow()
         {
-            SetForegroundWindow(WindowHandle);
-            GetWindowRect(WindowHandle, out RECT bounds);
-            MoveWindow(WindowHandle, bounds.Left, bounds.Top, 800, 480, true);
-            GetWindowRect(WindowHandle, out bounds);
+            WindowAPIHelper.SetForegroundWindow(WindowHandle);
+            WindowAPIHelper.GetWindowRect(WindowHandle, out WindowAPIHelper.RECT bounds);
+            WindowAPIHelper.MoveWindow(WindowHandle, bounds.Left, bounds.Top, 800, 480, true);
+            WindowAPIHelper.GetWindowRect(WindowHandle, out bounds);
 
             return bounds;
         }

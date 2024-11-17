@@ -1,4 +1,4 @@
-﻿using IdleonGamingMacro.Helpers;
+﻿using ProcessBase.Helpers;
 using Prism.Commands;
 using Prism.Mvvm;
 using Reactive.Bindings;
@@ -12,21 +12,6 @@ namespace IdleonMacroController.ViewModels
 {
     public class DebugModeViewModel : BindableBase
     {
-        [DllImport("user32.dll")]
-        private static extern IntPtr FindWindow(string? lpClassName, string lpWindowName);
-
-        [DllImport("user32.dll")]
-        private static extern bool GetWindowRect(IntPtr hWnd, out RECT lpRect);
-
-        [StructLayout(LayoutKind.Sequential)]
-        public struct RECT
-        {
-            public int Left;
-            public int Top;
-            public int Right;
-            public int Bottom;
-        }
-
         public const string WindowTitle = "Legends Of Idleon";
 
         public DelegateCommand GetWindowStatusCommand { get; private set; }
@@ -43,14 +28,14 @@ namespace IdleonMacroController.ViewModels
 
         private void GetWindowStatus()
         {
-            IntPtr windowHandle = FindWindow(null, WindowTitle);
+            IntPtr windowHandle = WindowAPIHelper.FindWindow(null, WindowTitle);
             if (windowHandle == IntPtr.Zero)
             {
                 LogControlHelper.debugLog("[IdleonGaming] Windowが見つかりませんでした。");
                 return;
             }
 
-            GetWindowRect(windowHandle, out RECT bounds);
+            WindowAPIHelper.GetWindowRect(windowHandle, out WindowAPIHelper.RECT bounds);
 
             WindowX.Value = bounds.Left;
             WindowY.Value = bounds.Top;

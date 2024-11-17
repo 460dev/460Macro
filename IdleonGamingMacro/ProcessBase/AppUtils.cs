@@ -1,4 +1,4 @@
-﻿using IdleonGamingMacro.Helpers;
+﻿using ProcessBase.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace IdleonGamingMacro
+namespace ProcessBase
 {
     class AppUtils
     {

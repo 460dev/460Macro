@@ -4,7 +4,7 @@ using Reactive.Bindings;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using IdleonGamingMacro.Helpers;
+using ProcessBase.Helpers;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -15,10 +15,6 @@ namespace IdleonMacroController.ViewModels
 {
     public class GamingViewModel : BindableBase
     {
-
-        [DllImport("user32.dll")]
-        private static extern IntPtr FindWindow(string? lpClassName, string lpWindowName);
-
         public const string WindowTitle = "Legends Of Idleon";
 
         public DelegateCommand StartStopCommand { get; private set; }
@@ -38,7 +34,7 @@ namespace IdleonMacroController.ViewModels
 
         private void StartStop()
         {
-            IntPtr windowHandle = FindWindow(null, WindowTitle);
+            IntPtr windowHandle = WindowAPIHelper.FindWindow(null, WindowTitle);
             if (windowHandle == IntPtr.Zero)
             {
                 LogControlHelper.debugLog("[IdleonGaming] Windowが見つかりませんでした。");

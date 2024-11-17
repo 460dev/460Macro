@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace IdleonGamingMacro.Models
+namespace ProcessBase.Models
 {
-    internal class ComparisonImageOption
+    public class ComparisonImageOption
     {
         public double Threshold { get; private set; }
         public double Scale { get; private set; }

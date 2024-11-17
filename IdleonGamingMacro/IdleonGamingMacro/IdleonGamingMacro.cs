@@ -3,18 +3,15 @@ using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using System.Threading;
-using IdleonGamingMacro.Events;
-using IdleonGamingMacro.Helpers;
-using IdleonGamingMacro.Models;
+using ProcessBase.Events;
+using ProcessBase.Helpers;
+using ProcessBase.Models;
 using OpenCvSharp;
 
-namespace IdleonGamingMacro
+namespace ProcessBase
 {
     class IdleonGamingMacro
     {
-        [DllImport("user32.dll")]
-        private static extern IntPtr FindWindow(string? lpClassName, string lpWindowName);
-
         public const string WindowTitle = "Legends Of Idleon";
 
         static void Main()
@@ -32,7 +29,7 @@ namespace IdleonGamingMacro
 
             Console.WriteLine("[IdleonGaming] 終了する場合はコンソールを閉じてください。");
 
-            IntPtr windowHandle = FindWindow(null, WindowTitle);
+            IntPtr windowHandle = WindowAPIHelper.FindWindow(null, WindowTitle);
             if (windowHandle == IntPtr.Zero)
             {
                 LogControlHelper.debugLog("[IdleonGaming] Windowが見つかりませんでした。");
