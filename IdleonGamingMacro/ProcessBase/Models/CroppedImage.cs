@@ -18,6 +18,8 @@ namespace ProcessBase.Models
         public Mat Image { get; private set; }
         public int X { get; private set; }
         public int Y { get; private set; }
+        public int Width { get; private set; }
+        public int Height { get; private set; }
 
         public CroppedImage(int captureX, int captureY, int captureWidth, int captureHeight)
         {
@@ -31,8 +33,11 @@ namespace ProcessBase.Models
             }
 
             Image = OpenCvSharp.Extensions.BitmapConverter.ToMat(screenshot);
+
             X = captureX;
             Y = captureY;
+            Width = captureWidth;
+            Height = captureHeight;
         }
 
         // 画像を解放するメソッド
