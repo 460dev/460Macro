@@ -15,9 +15,14 @@
     <None Remove="Images\cancel_button.png" />
     <None Remove="Images\chemical.png" />
     <None Remove="Images\chemical_transparent.png" />
+    <None Remove="Images\fertilizer.png" />
+    <None Remove="Images\gaming.png" />
     <None Remove="Images\harvest_all.png" />
+    <None Remove="Images\log_book.png" />
+    <None Remove="Images\quik_ref_disable.png" />
     <None Remove="Images\shovel_no_effect.png" />
     <None Remove="Images\sprinkler.png" />
+    <None Remove="Images\sprinkler_max.png" />
     <None Remove="Images\sprinkler_max_transparent.png" />
     <None Remove="Images\squirrel_transparent.png" />
   </ItemGroup>
@@ -35,7 +40,19 @@
     <Content Include="Images\chemical_transparent.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Images\gaming.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Images\harvest_all.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\log_book.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\quik_ref_disable.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\quik_ref_menu.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Images\shovel_no_effect.png">
@@ -44,7 +61,7 @@
     <Content Include="Images\sprinkler.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Images\sprinkler_max_transparent.png">
+    <Content Include="Images\sprinkler_max.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Images\squirrel_transparent.png">

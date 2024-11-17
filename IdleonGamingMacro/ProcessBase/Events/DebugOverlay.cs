@@ -1,11 +1,11 @@
-﻿using System.Drawing.Drawing2D;
-using System.Drawing;
+﻿#pragma warning disable CA1416
 
-#pragma warning disable CA1416
+using System.Drawing;
+using System.Drawing.Drawing2D;
 
 namespace ProcessBase.Events
 {
-    internal class DebugOverlay
+    public class DebugOverlay
     {
         // スクリーン上に直接赤枠を描画
         public static void DrawDebugRectangle(int x, int y, int width, int height, Pen pen)
