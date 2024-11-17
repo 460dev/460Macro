@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using static System.Formats.Asn1.AsnWriter;
+using System.Dynamic;
 
 namespace ProcessBase.Helpers
 {
@@ -48,71 +49,26 @@ namespace ProcessBase.Helpers
 
         private bool _disposed = false;
 
+        private int SqurrielLoopCount;
+        private int GetWindowRectCount;
+
         public void Start(CancellationToken cancellationToken, bool isOverlay = false)
         {
             WindowAPIHelper.RECT bounds = InitializeWindow();
 
-            int getWindowRectCount = 0;
-            int squrrielLoopCount = 0;
+            SqurrielLoopCount = 0;
+            GetWindowRectCount = 0;
 
             while (!cancellationToken.IsCancellationRequested)
             {
-                if (getWindowRectCount > 10)
+                if (GetWindowRectCount > 10)
                 {
                     WindowAPIHelper.GetWindowRect(WindowHandle, out bounds);
-                    getWindowRectCount = 0;
+                    GetWindowRectCount = 0;
                 }
 
-                ImageResult harvestResult = CheckImageProcess(bounds, GameX, GameY, GamingWidth, GamingHeight, ImagePath.HarvestAllImagePath, threshold: 0.7, isOverlay:isOverlay);
-                if (harvestResult.Status)
-                {
-                    BackGroundMouseClicker.SendClickToWindowAsync(WindowHandle, harvestResult.X - bounds.Left, harvestResult.Y - bounds.Top).ConfigureAwait(false);
-                }
-
-                ImageResult sprinklerMaxResult = CheckImageProcess(bounds, 0, 0, 800, 480, ImagePath.SprinklerMaxImagePath, threshold: 0.7, scale: 0.8, isOverlay: isOverlay); // Sprinkler max
-                if (!sprinklerMaxResult.Status)
-                {
-                    ImageResult chemicalResult = CheckImageProcess(bounds, GameX, GameY, GamingWidth, GamingHeight, ImagePath.ChemicalImagePath, threshold: 0.35, scale: 0.9, isOverlay: isOverlay); // Chemical
-                    if (chemicalResult.Status)
-                    {
-                        BackGroundMouseClicker.SendClickToWindowAsync(WindowHandle, chemicalResult.X - bounds.Left, chemicalResult.Y - bounds.Top).ConfigureAwait(false);
-                    }
-                }
-
-                ImageResult number2020Result = CheckImageProcess(bounds, GameX, GameY, GamingWidth, GamingHeight, ImagePath.Number2020ImagePath, threshold: 0.9, isOverlay: isOverlay); // 2020 number
-                if (!number2020Result.Status)
-                {
-                    ImageResult sprinklerResult = CheckImageProcess(bounds, GameX, GameY, GamingWidth, GamingHeight, ImagePath.SprinklerImagePath, threshold: 0.7, isOverlay: isOverlay); // Sprinkler
-                    if (sprinklerResult.Status)
-                    {
-                        BackGroundMouseClicker.SendClickToWindowAsync(WindowHandle, sprinklerResult.X - bounds.Left, sprinklerResult.Y - bounds.Top).ConfigureAwait(false);
-                    }
-                }
-
-                if (squrrielLoopCount > 10)
-                {
-                    ImageResult squirrelResult = CheckImageProcess(bounds, GameX, GameY, GamingWidth, GamingHeight, ImagePath.SquirrelImagePath, threshold: 0.5, isOverlay: isOverlay);     // Squirrel
-                    if (squirrelResult.Status)
-                    {
-                        BackGroundMouseClicker.SendClickToWindowAsync(WindowHandle, squirrelResult.X - bounds.Left, squirrelResult.Y - bounds.Top).ConfigureAwait(false);
-                    }
-                    squrrielLoopCount = 0;
-                }
-
-                ImageResult shovelResult = CheckImageProcess(bounds, 527, 326, 69, 69, ImagePath.ShovelNoEffectImagePath, threshold: 0.5, isOverlay: isOverlay); // Shovel
-                if (shovelResult.Status)
-                {
-                    BackGroundMouseClicker.SendClickToWindowAsync(WindowHandle, shovelResult.X - bounds.Left, shovelResult.Y - bounds.Top).ConfigureAwait(false);
-                }
-
-                ImageResult cancelButtonResult = CheckImageProcess(bounds, GameX, GameY, GamingWidth, GamingHeight, ImagePath.CancelBottunImagePath, threshold: 0.8, isOverlay: isOverlay);   // Cancel button
-                if (cancelButtonResult.Status)
-                {
-                    BackGroundMouseClicker.SendClickToWindowAsync(WindowHandle, cancelButtonResult.X - bounds.Left, cancelButtonResult.Y - bounds.Top).ConfigureAwait(false);
-                }
-
-                getWindowRectCount++;
-                squrrielLoopCount++;
+                GamingProcess(bounds);
+                GetWindowRectCount++;
 
                 LogControlHelper.debugLog("[IdleonGaming] 0.1秒待機");
                 try
@@ -132,6 +88,59 @@ namespace ProcessBase.Helpers
         public void Stop()
         {
             _cancellationTokenSource?.Cancel();
+        }
+
+        private void GamingProcess(WindowAPIHelper.RECT bounds, bool isOverlay = false)
+        {
+            ImageResult harvestResult = CheckImageProcess(bounds, GameX, GameY, GamingWidth, GamingHeight, ImagePath.HarvestAllImagePath, threshold: 0.7, isOverlay: isOverlay);
+            if (harvestResult.Status)
+            {
+                BackGroundMouseClicker.SendClickToWindowAsync(WindowHandle, harvestResult.X - bounds.Left, harvestResult.Y - bounds.Top).ConfigureAwait(false);
+            }
+
+            ImageResult sprinklerMaxResult = CheckImageProcess(bounds, 0, 0, 800, 480, ImagePath.SprinklerMaxImagePath, threshold: 0.7, scale: 0.8, isOverlay: isOverlay); // Sprinkler max
+            if (!sprinklerMaxResult.Status)
+            {
+                ImageResult chemicalResult = CheckImageProcess(bounds, GameX, GameY, GamingWidth, GamingHeight, ImagePath.ChemicalImagePath, threshold: 0.35, scale: 0.9, isOverlay: isOverlay); // Chemical
+                if (chemicalResult.Status)
+                {
+                    BackGroundMouseClicker.SendClickToWindowAsync(WindowHandle, chemicalResult.X - bounds.Left, chemicalResult.Y - bounds.Top).ConfigureAwait(false);
+                }
+            }
+
+            ImageResult number2020Result = CheckImageProcess(bounds, GameX, GameY, GamingWidth, GamingHeight, ImagePath.Number2020ImagePath, threshold: 0.9, isOverlay: isOverlay); // 2020 number
+            if (!number2020Result.Status)
+            {
+                ImageResult sprinklerResult = CheckImageProcess(bounds, GameX, GameY, GamingWidth, GamingHeight, ImagePath.SprinklerImagePath, threshold: 0.7, isOverlay: isOverlay); // Sprinkler
+                if (sprinklerResult.Status)
+                {
+                    BackGroundMouseClicker.SendClickToWindowAsync(WindowHandle, sprinklerResult.X - bounds.Left, sprinklerResult.Y - bounds.Top).ConfigureAwait(false);
+                }
+            }
+
+            if (SqurrielLoopCount > 10)
+            {
+                ImageResult squirrelResult = CheckImageProcess(bounds, GameX, GameY, GamingWidth, GamingHeight, ImagePath.SquirrelImagePath, threshold: 0.5, isOverlay: isOverlay);     // Squirrel
+                if (squirrelResult.Status)
+                {
+                    BackGroundMouseClicker.SendClickToWindowAsync(WindowHandle, squirrelResult.X - bounds.Left, squirrelResult.Y - bounds.Top).ConfigureAwait(false);
+                }
+                SqurrielLoopCount = 0;
+            }
+
+            ImageResult shovelResult = CheckImageProcess(bounds, 527, 326, 69, 69, ImagePath.ShovelNoEffectImagePath, threshold: 0.5, isOverlay: isOverlay); // Shovel
+            if (shovelResult.Status)
+            {
+                BackGroundMouseClicker.SendClickToWindowAsync(WindowHandle, shovelResult.X - bounds.Left, shovelResult.Y - bounds.Top).ConfigureAwait(false);
+            }
+
+            ImageResult cancelButtonResult = CheckImageProcess(bounds, GameX, GameY, GamingWidth, GamingHeight, ImagePath.CancelBottunImagePath, threshold: 0.8, isOverlay: isOverlay);   // Cancel button
+            if (cancelButtonResult.Status)
+            {
+                BackGroundMouseClicker.SendClickToWindowAsync(WindowHandle, cancelButtonResult.X - bounds.Left, cancelButtonResult.Y - bounds.Top).ConfigureAwait(false);
+            }
+
+            SqurrielLoopCount++;
         }
 
         private ImageResult CheckImageProcess(WindowAPIHelper.RECT bounds, int offsetX, int offsetY, int width, int height, string imagePath, double threshold, double scale = 1.0, bool isOverlay = false)
