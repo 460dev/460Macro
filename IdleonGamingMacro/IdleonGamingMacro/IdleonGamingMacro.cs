@@ -15,7 +15,7 @@ namespace IdleonGamingMacro
         [DllImport("user32.dll")]
         private static extern IntPtr FindWindow(string? lpClassName, string lpWindowName);
 
-        public const string WindowTitle = "Legends Of Idleon"; // 定数
+        public const string WindowTitle = "Legends Of Idleon";
 
         static void Main()
         {

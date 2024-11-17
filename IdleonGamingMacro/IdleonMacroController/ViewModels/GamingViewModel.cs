@@ -80,7 +80,7 @@ namespace IdleonMacroController.ViewModels
                 {
                     try
                     {
-                        gamingHelper.Start(token);
+                        gamingHelper.Start(token, isOverlay:IsPreview.Value);
                     }
                     finally
                     {

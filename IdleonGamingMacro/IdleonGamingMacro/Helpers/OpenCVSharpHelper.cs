@@ -21,8 +21,10 @@ namespace IdleonGamingMacro.Helpers
             // オーバーレイ表示
             if (isOverlay)
             {
-                System.Drawing.Pen pen = new(System.Drawing.Color.Blue, 3);
-                DebugOverlay.DrawDebugRectangle(croppedImage.X, croppedImage.Y, croppedImage.Image.Width, croppedImage.Image.Height, pen);
+                //using (System.Drawing.Pen pen = new(System.Drawing.Color.Blue, 3))
+                //{
+                //    DebugOverlay.DrawDebugRectangle(croppedImage.X, croppedImage.Y, croppedImage.Image.Width, croppedImage.Image.Height, pen);
+                //}
             }
 
             var resultMat = ComparisonImage(referenceImage.Image, croppedImage.Image, imageOption);
@@ -37,10 +39,13 @@ namespace IdleonGamingMacro.Helpers
                 // オーバーレイ表示
                 if (isOverlay)
                 {
-                    System.Drawing.Pen pen = new(System.Drawing.Color.Red, 3);
-                    int overlayX = targetRect.X + resultMat.ImageRect.X;
-                    int overlayY = targetRect.Y + resultMat.ImageRect.Y;
-                    DebugOverlay.DrawDebugRectangle(overlayX, overlayY, resultMat.ImageRect.Width, resultMat.ImageRect.Height, pen);
+                    //int overlayX = targetRect.X + resultMat.ImageRect.X;
+                    //int overlayY = targetRect.Y + resultMat.ImageRect.Y;
+
+                    //using (System.Drawing.Pen pen = new(System.Drawing.Color.Red, 3))
+                    //{
+                    //    DebugOverlay.DrawDebugRectangle(overlayX, overlayY, resultMat.ImageRect.Width, resultMat.ImageRect.Height, pen);
+                    //}
                 }
 
                 LogControlHelper.debugLog($"[IdleonGaming] x: {imageResult.X}, y: {imageResult.Y}");
