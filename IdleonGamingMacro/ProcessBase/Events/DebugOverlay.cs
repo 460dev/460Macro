@@ -3,7 +3,7 @@ using System.Drawing;
 
 #pragma warning disable CA1416
 
-namespace IdleonGamingMacro.Events
+namespace ProcessBase.Events
 {
     internal class DebugOverlay
     {

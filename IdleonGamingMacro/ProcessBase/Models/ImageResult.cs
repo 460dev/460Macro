@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace IdleonGamingMacro.Models
+namespace ProcessBase.Models
 {
-    internal class ImageResult
+    public class ImageResult
     {
         public ImageResult()
         {

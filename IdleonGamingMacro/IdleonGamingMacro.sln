@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IdleonGamingMacro", "Idleon
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IdleonMacroController", "IdleonMacroController\IdleonMacroController.csproj", "{F5F32058-3F23-4244-A379-822AA96ECEBD}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProcessBase", "ProcessBase\ProcessBase.csproj", "{47039503-93F3-4CEA-8926-E4DF2C8B3125}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -31,6 +33,14 @@ Global
 		{F5F32058-3F23-4244-A379-822AA96ECEBD}.Release|Any CPU.Build.0 = Release|Any CPU
 		{F5F32058-3F23-4244-A379-822AA96ECEBD}.Release|x64.ActiveCfg = Release|x64
 		{F5F32058-3F23-4244-A379-822AA96ECEBD}.Release|x64.Build.0 = Release|x64
+		{47039503-93F3-4CEA-8926-E4DF2C8B3125}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{47039503-93F3-4CEA-8926-E4DF2C8B3125}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{47039503-93F3-4CEA-8926-E4DF2C8B3125}.Debug|x64.ActiveCfg = Debug|x64
+		{47039503-93F3-4CEA-8926-E4DF2C8B3125}.Debug|x64.Build.0 = Debug|x64
+		{47039503-93F3-4CEA-8926-E4DF2C8B3125}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{47039503-93F3-4CEA-8926-E4DF2C8B3125}.Release|Any CPU.Build.0 = Release|Any CPU
+		{47039503-93F3-4CEA-8926-E4DF2C8B3125}.Release|x64.ActiveCfg = Release|x64
+		{47039503-93F3-4CEA-8926-E4DF2C8B3125}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
