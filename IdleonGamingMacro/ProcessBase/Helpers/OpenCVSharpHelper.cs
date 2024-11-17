@@ -8,7 +8,7 @@ namespace ProcessBase.Helpers
 {
     public class OpenCVSharpHelper
     {
-        public ImageResult CheckImage(Rect targetRect, string imagePath, ComparisonImageOption imageOption, int borderLeft, int borderTop, bool isOverlay = false)
+        public ImageResult CheckImage(Rect borderRect, Rect targetRect, string imagePath, ComparisonImageOption imageOption, bool isOverlay = false)
         {
             ImageResult imageResult = new()
             {
@@ -21,10 +21,11 @@ namespace ProcessBase.Helpers
             // オーバーレイ表示
             if (isOverlay)
             {
-                //using (System.Drawing.Pen pen = new(System.Drawing.Color.Blue, 3))
-                //{
-                //    DebugOverlay.DrawDebugRectangle(croppedImage.X, croppedImage.Y, croppedImage.Image.Width, croppedImage.Image.Height, pen);
-                //}
+                // 検知範囲表示 (青)
+                using (System.Drawing.Pen pen = new(System.Drawing.Color.Blue, 3))
+                {
+                    DebugOverlay.DrawDebugRectangle(croppedImage.X, croppedImage.Y, croppedImage.Width, croppedImage.Height, pen);
+                }
             }
 
             var resultMat = ComparisonImage(referenceImage.Image, croppedImage.Image, imageOption);
@@ -39,19 +40,26 @@ namespace ProcessBase.Helpers
                 // オーバーレイ表示
                 if (isOverlay)
                 {
-                    //int overlayX = targetRect.X + resultMat.ImageRect.X;
-                    //int overlayY = targetRect.Y + resultMat.ImageRect.Y;
+                    int overlayX = targetRect.X + resultMat.ImageRect.X;
+                    int overlayY = targetRect.Y + resultMat.ImageRect.Y;
 
-                    //using (System.Drawing.Pen pen = new(System.Drawing.Color.Red, 3))
-                    //{
-                    //    DebugOverlay.DrawDebugRectangle(overlayX, overlayY, resultMat.ImageRect.Width, resultMat.ImageRect.Height, pen);
-                    //}
+                    // 検知した範囲表示 (赤)
+                    using (System.Drawing.Pen pen = new(System.Drawing.Color.Red, 3))
+                    {
+                        DebugOverlay.DrawDebugRectangle(overlayX, overlayY, resultMat.ImageRect.Width, resultMat.ImageRect.Height, pen);
+                    }
+
+                    // ボーダー線表示 (緑)
+                    using (System.Drawing.Pen pen = new(System.Drawing.Color.Green, 3))
+                    {
+                        DebugOverlay.DrawDebugRectangle(borderRect.Left, borderRect.Top, borderRect.Width, borderRect.Height, pen);
+                    }
                 }
 
                 LogControlHelper.debugLog($"[IdleonGaming] x: {imageResult.X}, y: {imageResult.Y}");
 
                 // 左下を検知しないようにする
-                if (imageResult.X >= borderLeft + 30 && imageResult.X <= borderLeft + 110 && imageResult.Y >= borderTop + 310 && imageResult.Y <= borderTop + 390)
+                if (imageResult.X >= borderRect.Left && imageResult.X <= borderRect.Right && imageResult.Y >= borderRect.Top && imageResult.Y <= borderRect.Bottom)
                 {
                     return imageResult;
                 }

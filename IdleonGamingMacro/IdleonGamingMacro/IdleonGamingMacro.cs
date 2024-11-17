@@ -41,7 +41,7 @@ namespace ProcessBase
             // スタート
             var cancellationTokenSource = new CancellationTokenSource();
             CancellationToken token = cancellationTokenSource.Token;
-            gamingHelper.Start(token);
+            gamingHelper.Start(token, isOverlay: true);
         }
     }
 
