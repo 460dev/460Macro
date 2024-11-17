@@ -31,14 +31,17 @@
             HorizontalAlignment="Left" Background="Transparent" BorderBrush="Transparent" Padding="10">
             <TextBlock Text="店デイリー購入" Foreground="White" FontSize="16"/>
         </Button>
-        <!--<Button HorizontalAlignment="Left" Background="Transparent" BorderBrush="Transparent" Padding="10">
-            <TextBlock Text="..." Foreground="White" FontSize="16"/>
-        </Button>-->
-        <!-- 設定ボタン（下部に配置） -->
-        <StackPanel VerticalAlignment="Bottom">
-            <Button HorizontalAlignment="Left" Background="Transparent" BorderBrush="Transparent" Padding="10">
-                <TextBlock Text="設定" Foreground="White" FontSize="16"/>
-            </Button>
-        </StackPanel>
+
+        <Button
+            Command="{Binding NavigateCommand}" CommandParameter="DebugMode"
+            HorizontalAlignment="Left" Background="Transparent" BorderBrush="Transparent" Padding="10">
+            <TextBlock Text="開発者メニュー" Foreground="White" FontSize="16"/>
+        </Button>
+
+        <Button
+            Command="{Binding NavigateCommand}" CommandParameter="Setting"
+            HorizontalAlignment="Left" Background="Transparent" BorderBrush="Transparent" Padding="10">
+            <TextBlock Text="設定" Foreground="White" FontSize="16"/>
+        </Button>
     </StackPanel>
 </UserControl>

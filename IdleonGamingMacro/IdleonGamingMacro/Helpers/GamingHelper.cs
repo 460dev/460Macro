@@ -12,7 +12,7 @@ using static System.Formats.Asn1.AsnWriter;
 
 namespace IdleonGamingMacro.Helpers
 {
-    public class GamingHelper
+    public class GamingHelper : IDisposable
     {
         [DllImport("user32.dll")]
         private static extern bool GetWindowRect(IntPtr hWnd, out RECT lpRect);
@@ -45,7 +45,6 @@ namespace IdleonGamingMacro.Helpers
         }
 
         public IntPtr WindowHandle { get; private set; }
-
         private OpenCVSharpHelper OpenCVSharpHelper;
 
         public const string WindowTitle = "Legends Of Idleon";
@@ -61,9 +60,13 @@ namespace IdleonGamingMacro.Helpers
             OpenCVSharpHelper = new OpenCVSharpHelper();
         }
 
+#nullable enable
         private CancellationTokenSource? _cancellationTokenSource;
+#nullable disable
 
-        public void Start(CancellationToken cancellationToken)
+        private bool _disposed = false;
+
+        public void Start(CancellationToken cancellationToken, bool isOverlay = false)
         {
             RECT bounds = InitializeWindow();
 
@@ -78,26 +81,26 @@ namespace IdleonGamingMacro.Helpers
                     getWindowRectCount = 0;
                 }
 
-                ImageResult harvestResult = CheckImageProcess(bounds, GameX, GameY, GamingWidth, GamingHeight, ImagePath.HarvestAllImagePath, threshold: 0.7);
+                ImageResult harvestResult = CheckImageProcess(bounds, GameX, GameY, GamingWidth, GamingHeight, ImagePath.HarvestAllImagePath, threshold: 0.7, isOverlay:isOverlay);
                 if (harvestResult.Status)
                 {
                     BackGroundMouseClicker.SendClickToWindowAsync(WindowHandle, harvestResult.X - bounds.Left, harvestResult.Y - bounds.Top).ConfigureAwait(false);
                 }
 
-                ImageResult sprinklerMaxResult = CheckImageProcess(bounds, 0, 0, 800, 480, ImagePath.SprinklerMaxImagePath, threshold: 0.7, scale: 0.8); // Sprinkler max
+                ImageResult sprinklerMaxResult = CheckImageProcess(bounds, 0, 0, 800, 480, ImagePath.SprinklerMaxImagePath, threshold: 0.7, scale: 0.8, isOverlay: isOverlay); // Sprinkler max
                 if (!sprinklerMaxResult.Status)
                 {
-                    ImageResult chemicalResult = CheckImageProcess(bounds, GameX, GameY, GamingWidth, GamingHeight, ImagePath.ChemicalImagePath, threshold: 0.35, scale: 0.9); // Chemical
+                    ImageResult chemicalResult = CheckImageProcess(bounds, GameX, GameY, GamingWidth, GamingHeight, ImagePath.ChemicalImagePath, threshold: 0.35, scale: 0.9, isOverlay: isOverlay); // Chemical
                     if (chemicalResult.Status)
                     {
                         BackGroundMouseClicker.SendClickToWindowAsync(WindowHandle, chemicalResult.X - bounds.Left, chemicalResult.Y - bounds.Top).ConfigureAwait(false);
                     }
                 }
 
-                ImageResult number2020Result = CheckImageProcess(bounds, GameX, GameY, GamingWidth, GamingHeight, ImagePath.Number2020ImagePath, threshold: 0.9); // 2020 number
+                ImageResult number2020Result = CheckImageProcess(bounds, GameX, GameY, GamingWidth, GamingHeight, ImagePath.Number2020ImagePath, threshold: 0.9, isOverlay: isOverlay); // 2020 number
                 if (!number2020Result.Status)
                 {
-                    ImageResult sprinklerResult = CheckImageProcess(bounds, GameX, GameY, GamingWidth, GamingHeight, ImagePath.SprinklerImagePath, threshold: 0.7); // Sprinkler
+                    ImageResult sprinklerResult = CheckImageProcess(bounds, GameX, GameY, GamingWidth, GamingHeight, ImagePath.SprinklerImagePath, threshold: 0.7, isOverlay: isOverlay); // Sprinkler
                     if (sprinklerResult.Status)
                     {
                         BackGroundMouseClicker.SendClickToWindowAsync(WindowHandle, sprinklerResult.X - bounds.Left, sprinklerResult.Y - bounds.Top).ConfigureAwait(false);
@@ -106,7 +109,7 @@ namespace IdleonGamingMacro.Helpers
 
                 if (squrrielLoopCount > 10)
                 {
-                    ImageResult squirrelResult = CheckImageProcess(bounds, GameX, GameY, GamingWidth, GamingHeight, ImagePath.SquirrelImagePath, threshold: 0.5);     // Squirrel
+                    ImageResult squirrelResult = CheckImageProcess(bounds, GameX, GameY, GamingWidth, GamingHeight, ImagePath.SquirrelImagePath, threshold: 0.5, isOverlay: isOverlay);     // Squirrel
                     if (squirrelResult.Status)
                     {
                         BackGroundMouseClicker.SendClickToWindowAsync(WindowHandle, squirrelResult.X - bounds.Left, squirrelResult.Y - bounds.Top).ConfigureAwait(false);
@@ -114,13 +117,13 @@ namespace IdleonGamingMacro.Helpers
                     squrrielLoopCount = 0;
                 }
 
-                ImageResult shovelResult = CheckImageProcess(bounds, 527, 326, 69, 69, ImagePath.ShovelNoEffectImagePath, threshold: 0.5); // Shovel
+                ImageResult shovelResult = CheckImageProcess(bounds, 527, 326, 69, 69, ImagePath.ShovelNoEffectImagePath, threshold: 0.5, isOverlay: isOverlay); // Shovel
                 if (shovelResult.Status)
                 {
                     BackGroundMouseClicker.SendClickToWindowAsync(WindowHandle, shovelResult.X - bounds.Left, shovelResult.Y - bounds.Top).ConfigureAwait(false);
                 }
 
-                ImageResult cancelButtonResult = CheckImageProcess(bounds, GameX, GameY, GamingWidth, GamingHeight, ImagePath.CancelBottunImagePath, threshold: 0.8);   // Cancel button
+                ImageResult cancelButtonResult = CheckImageProcess(bounds, GameX, GameY, GamingWidth, GamingHeight, ImagePath.CancelBottunImagePath, threshold: 0.8, isOverlay: isOverlay);   // Cancel button
                 if (cancelButtonResult.Status)
                 {
                     BackGroundMouseClicker.SendClickToWindowAsync(WindowHandle, cancelButtonResult.X - bounds.Left, cancelButtonResult.Y - bounds.Top).ConfigureAwait(false);
@@ -149,7 +152,7 @@ namespace IdleonGamingMacro.Helpers
             _cancellationTokenSource?.Cancel();
         }
 
-        private ImageResult CheckImageProcess(RECT bounds, int offsetX, int offsetY, int width, int height, string imagePath, double threshold, double scale = 1.0)
+        private ImageResult CheckImageProcess(RECT bounds, int offsetX, int offsetY, int width, int height, string imagePath, double threshold, double scale = 1.0, bool isOverlay = false)
         {
             Rect targetRect = new Rect(
                 X: bounds.Left + offsetX,
@@ -160,7 +163,7 @@ namespace IdleonGamingMacro.Helpers
 
             ComparisonImageOption imageOption = new(threshold: threshold, scale: scale);
 
-            return OpenCVSharpHelper.CheckImage(targetRect, imagePath, imageOption, bounds.Left, bounds.Top);
+            return OpenCVSharpHelper.CheckImage(targetRect, imagePath, imageOption, bounds.Left, bounds.Top, isOverlay);
         }
 
         private RECT InitializeWindow()
@@ -171,6 +174,43 @@ namespace IdleonGamingMacro.Helpers
             GetWindowRect(WindowHandle, out bounds);
 
             return bounds;
+        }
+
+        /// <summary>
+        /// リソースを解放します。
+        /// </summary>
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// リソース解放処理。
+        /// </summary>
+        /// <param name="disposing">マネージドリソースを解放するかどうか。</param>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!_disposed)
+            {
+                if (disposing)
+                {
+                    // マネージドリソースの解放
+                    _cancellationTokenSource?.Cancel();
+                    _cancellationTokenSource?.Dispose();
+                    _cancellationTokenSource = null;
+                }
+
+                // アンマネージリソースの解放（必要に応じて実装）
+                WindowHandle = IntPtr.Zero;
+
+                _disposed = true;
+            }
+        }
+
+        ~GamingHelper()
+        {
+            Dispose(false);
         }
     }
 }

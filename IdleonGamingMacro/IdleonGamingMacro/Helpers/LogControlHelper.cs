@@ -9,6 +9,7 @@ using System.Diagnostics;
 using NLog;
 using NLog.Config;
 using NLog.Targets;
+using System.Reflection;
 
 namespace IdleonGamingMacro.Helpers
 {
@@ -24,25 +25,6 @@ namespace IdleonGamingMacro.Helpers
         {
             // exeファイルの実行場所を取得し、設定する
             Directory.SetCurrentDirectory(AppUtils.GetCurrentAppDir());
-
-            //// LoggingConfigurationを生成 
-            //var config = new LoggingConfiguration();
-
-            //// FileTargetを生成し LoggingConfigurationに設定 
-            //var fileTarget = new FileTarget();
-            //config.AddTarget("file", fileTarget);
-
-            //// fileTargetのプロパティを設定
-            //fileTarget.Name = "f";
-            //fileTarget.FileName = "${basedir}/log/${shortdate}.log";
-            //fileTarget.Layout = "${longdate} [${uppercase:${level}}] ${message}";
-
-            //// LoggingRuleを定義
-            //var rule1 = new LoggingRule("*", LogLevel.Debug, fileTarget);
-            //config.LoggingRules.Add(rule1);
-
-            //// 設定を有効化
-            //LogManager.Configuration = config;
         }
 
         /// <summary>
@@ -55,12 +37,23 @@ namespace IdleonGamingMacro.Helpers
             [System.Runtime.CompilerServices.CallerMemberName] string memberName = "",
             [System.Runtime.CompilerServices.CallerLineNumber] int sourceLineNumber = 0)
         {
-            //一つ前のスタックを取得
+            // 一つ前のスタックを取得
             StackFrame callerFrame = new StackFrame(1);
-            //クラス名
-            string className = callerFrame.GetMethod().ReflectedType.FullName;
+            MethodBase? method = callerFrame.GetMethod();
 
-            logger.Error("[version : " + _appVersion + "][" + className + ":L" + sourceLineNumber + ", " + memberName + "] " + message);
+            // クラス名
+            string className = method?.ReflectedType?.FullName ?? "UnknownClass";
+
+            // nullチェックとログ出力
+            if (logger != null && _appVersion != null)
+            {
+                logger.Error($"[version : {_appVersion}][{className}:L{sourceLineNumber}, {memberName}] {message}");
+            }
+            else
+            {
+                // 必要に応じて他のエラーハンドリング
+                Console.WriteLine("Logger or AppVersion is null. Unable to log error.");
+            }
         }
 
         /// <summary>
@@ -73,12 +66,25 @@ namespace IdleonGamingMacro.Helpers
             [System.Runtime.CompilerServices.CallerMemberName] string memberName = "",
             [System.Runtime.CompilerServices.CallerLineNumber] int sourceLineNumber = 0)
         {
-            //一つ前のスタックを取得
+            // 一つ前のスタックを取得
             StackFrame callerFrame = new StackFrame(1);
-            //クラス名
-            string className = callerFrame.GetMethod().ReflectedType.FullName;
+            MethodBase? method = callerFrame.GetMethod();
 
-            logger.Info("[version : " + _appVersion + "][" + className + ":L" + sourceLineNumber + ", " + memberName + "] " + message);
+            // クラス名の取得
+            string className = method?.ReflectedType?.FullName ?? "UnknownClass";
+
+            // アプリバージョンの取得
+            string appVersion = _appVersion ?? "UnknownVersion";
+
+            // loggerがnullでないことを確認
+            if (logger != null)
+            {
+                logger.Info($"[version : {appVersion}][{className}:L{sourceLineNumber}, {memberName}] {message}");
+            }
+            else
+            {
+                Console.WriteLine($"Logger is not initialized. [version : {appVersion}][{className}:L{sourceLineNumber}, {memberName}] {message}");
+            }
         }
 
         /// <summary>
@@ -198,11 +204,14 @@ namespace IdleonGamingMacro.Helpers
         /// </summary>
         public static void GetAppVersion()
         {
-            //自分自身のAssemblyを取得
+            // 自分自身のAssemblyを取得
             System.Reflection.Assembly asm = System.Reflection.Assembly.GetExecutingAssembly();
-            //バージョンの取得
-            System.Version ver = asm.GetName().Version;
-            _appVersion = ver.ToString();
+
+            // バージョンの取得
+            System.Version? ver = asm.GetName().Version;
+
+            // nullチェック
+            _appVersion = ver?.ToString() ?? "UnknownVersion";
         }
     }
 }

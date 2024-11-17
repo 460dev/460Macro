@@ -1,19 +1,14 @@
 ﻿using IdleonGamingMacro.Events;
 using IdleonGamingMacro.Models;
 using OpenCvSharp;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
-using static System.Formats.Asn1.AsnWriter;
+
+#pragma warning disable CA1416
 
 namespace IdleonGamingMacro.Helpers
 {
     internal class OpenCVSharpHelper
     {
-        public ImageResult CheckImage(Rect targetRect, string imagePath, ComparisonImageOption imageOption, int borderLeft, int borderTop)
+        public ImageResult CheckImage(Rect targetRect, string imagePath, ComparisonImageOption imageOption, int borderLeft, int borderTop, bool isOverlay = false)
         {
             ImageResult imageResult = new()
             {
@@ -23,6 +18,15 @@ namespace IdleonGamingMacro.Helpers
             ReferenceImage referenceImage = new(imagePath);
             CroppedImage croppedImage = new(targetRect.X, targetRect.Y, targetRect.Width, targetRect.Height);
 
+            // オーバーレイ表示
+            if (isOverlay)
+            {
+                //using (System.Drawing.Pen pen = new(System.Drawing.Color.Blue, 3))
+                //{
+                //    DebugOverlay.DrawDebugRectangle(croppedImage.X, croppedImage.Y, croppedImage.Image.Width, croppedImage.Image.Height, pen);
+                //}
+            }
+
             var resultMat = ComparisonImage(referenceImage.Image, croppedImage.Image, imageOption);
 
             if (resultMat.Status)
@@ -31,10 +35,23 @@ namespace IdleonGamingMacro.Helpers
                 LogControlHelper.debugLog("[IdleonGaming] " + imagePath + " が見つかりました。");
                 imageResult.X = targetRect.X + (resultMat.ImageRect.X + (resultMat.ImageRect.Width / 2));
                 imageResult.Y = targetRect.Y + (resultMat.ImageRect.Y + (resultMat.ImageRect.Height / 2));
+
+                // オーバーレイ表示
+                if (isOverlay)
+                {
+                    //int overlayX = targetRect.X + resultMat.ImageRect.X;
+                    //int overlayY = targetRect.Y + resultMat.ImageRect.Y;
+
+                    //using (System.Drawing.Pen pen = new(System.Drawing.Color.Red, 3))
+                    //{
+                    //    DebugOverlay.DrawDebugRectangle(overlayX, overlayY, resultMat.ImageRect.Width, resultMat.ImageRect.Height, pen);
+                    //}
+                }
+
                 LogControlHelper.debugLog($"[IdleonGaming] x: {imageResult.X}, y: {imageResult.Y}");
 
                 // 左下を検知しないようにする
-                if (imageResult.X >= borderLeft + 30 && imageResult.X <= borderLeft + 135 && imageResult.Y >= borderTop + 310 && imageResult.Y <= borderTop + 390)
+                if (imageResult.X >= borderLeft + 30 && imageResult.X <= borderLeft + 110 && imageResult.Y >= borderTop + 310 && imageResult.Y <= borderTop + 390)
                 {
                     return imageResult;
                 }
@@ -155,3 +172,5 @@ namespace IdleonGamingMacro.Helpers
         }
     }
 }
+
+#pragma warning restore CA1416

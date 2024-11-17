@@ -1,17 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing.Drawing2D;
+﻿using System.Drawing.Drawing2D;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
+#pragma warning disable CA1416
 
 namespace IdleonGamingMacro.Events
 {
     internal class DebugOverlay
     {
         // スクリーン上に直接赤枠を描画
-        public static void DrawDebugRectangle(int x, int y, int width, int height)
+        public static void DrawDebugRectangle(int x, int y, int width, int height, Pen pen)
         {
             using (Graphics g = Graphics.FromHwnd(IntPtr.Zero)) // デスクトップ全体に描画
             {
@@ -20,12 +17,10 @@ namespace IdleonGamingMacro.Events
                 g.SmoothingMode = SmoothingMode.AntiAlias;
                 g.InterpolationMode = InterpolationMode.HighQualityBicubic;
 
-                // 赤いペンを作成し、枠を描画
-                using (Pen redPen = new Pen(Color.Red, 2))
-                {
-                    g.DrawRectangle(redPen, x, y, width, height);
-                }
+                g.DrawRectangle(pen, x, y, width, height);
             }
         }
     }
 }
+
+#pragma warning restore CA1416
