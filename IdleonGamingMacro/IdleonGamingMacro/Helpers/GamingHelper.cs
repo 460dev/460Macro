@@ -82,7 +82,7 @@ namespace ProcessBase.Helpers
 
                 GetWindowRectCount++;
 
-                // 画面全体から対象画像を探してScreenStatesを更新する
+                // 画面全体から対象画像を探してScreenStatusを更新する
                 ScreenStatus = GetScreenStatus(bounds, isOverlay);
                 Task.Delay(200);
 
@@ -146,7 +146,7 @@ namespace ProcessBase.Helpers
             return Constants.Screen.ScreenStatus.None;
         }
 
-        private void GamingProcess(WindowAPIHelper.RECT bounds, bool isOverlay)
+        public void GamingProcess(WindowAPIHelper.RECT bounds, bool isOverlay)
         {
             ImageResult harvestResult = CheckImageProcess(bounds, GameX, GameY, GamingWidth, GamingHeight, ImagePath.HarvestAllImagePath, threshold: 0.7, isOverlay: isOverlay);
             if (harvestResult.Status)
