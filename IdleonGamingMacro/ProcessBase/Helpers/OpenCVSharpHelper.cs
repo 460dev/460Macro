@@ -1,6 +1,8 @@
 ﻿using ProcessBase.Events;
 using ProcessBase.Models;
 using OpenCvSharp;
+using NLog.Config;
+using System.Diagnostics;
 
 #pragma warning disable CA1416
 
@@ -8,7 +10,14 @@ namespace ProcessBase.Helpers
 {
     public class OpenCVSharpHelper
     {
-        public ImageResult CheckImage(Rect borderRect, Rect targetRect, string imagePath, ComparisonImageOption imageOption, bool isOverlay = false)
+        public enum CheckBorderType
+        {
+            None = 0,
+            In = 1,
+            Out = 2,
+        }
+
+        public ImageResult CheckImage(Rect borderRect, Rect targetRect, string imagePath, ComparisonImageOption imageOption, CheckBorderType checkBorderType = CheckBorderType.None)
         {
             ImageResult imageResult = new()
             {
@@ -18,16 +27,6 @@ namespace ProcessBase.Helpers
             ReferenceImage referenceImage = new(imagePath);
             CroppedImage croppedImage = new(targetRect.X, targetRect.Y, targetRect.Width, targetRect.Height);
 
-            // オーバーレイ表示
-            if (isOverlay)
-            {
-                // 検知範囲表示 (青)
-                using (System.Drawing.Pen pen = new(System.Drawing.Color.Blue, 3))
-                {
-                    DebugOverlay.DrawDebugRectangle(croppedImage.X, croppedImage.Y, croppedImage.Width, croppedImage.Height, pen);
-                }
-            }
-
             var resultMat = ComparisonImage(referenceImage.Image, croppedImage.Image, imageOption);
 
             if (resultMat.Status)
@@ -36,30 +35,13 @@ namespace ProcessBase.Helpers
                 LogControlHelper.debugLog("[IdleonGaming] " + imagePath + " が見つかりました。");
                 imageResult.X = targetRect.X + (resultMat.ImageRect.X + (resultMat.ImageRect.Width / 2));
                 imageResult.Y = targetRect.Y + (resultMat.ImageRect.Y + (resultMat.ImageRect.Height / 2));
-
-                // オーバーレイ表示
-                if (isOverlay)
-                {
-                    int overlayX = targetRect.X + resultMat.ImageRect.X;
-                    int overlayY = targetRect.Y + resultMat.ImageRect.Y;
-
-                    // 検知した範囲表示 (赤)
-                    using (System.Drawing.Pen pen = new(System.Drawing.Color.Red, 3))
-                    {
-                        DebugOverlay.DrawDebugRectangle(overlayX, overlayY, resultMat.ImageRect.Width, resultMat.ImageRect.Height, pen);
-                    }
-
-                    // ボーダー線表示 (緑)
-                    using (System.Drawing.Pen pen = new(System.Drawing.Color.Green, 3))
-                    {
-                        DebugOverlay.DrawDebugRectangle(borderRect.Left, borderRect.Top, borderRect.Width, borderRect.Height, pen);
-                    }
-                }
+                imageResult.OverlayX = targetRect.X + resultMat.ImageRect.X;
+                imageResult.OverlayY = targetRect.Y + resultMat.ImageRect.Y;
+                imageResult.Width = resultMat.ImageRect.Width;
+                imageResult.Height = resultMat.ImageRect.Height;
 
                 LogControlHelper.debugLog($"[IdleonGaming] x: {imageResult.X}, y: {imageResult.Y}");
-
-                // 左下を検知しないようにする
-                if (imageResult.X >= borderRect.Left && imageResult.X <= borderRect.Right && imageResult.Y >= borderRect.Top && imageResult.Y <= borderRect.Bottom)
+                if (!CheckBorder(borderRect, imageResult, checkBorderType))
                 {
                     return imageResult;
                 }
@@ -136,9 +118,9 @@ namespace ProcessBase.Helpers
                 Cv2.Canny(scaledTemplate, scaledTemplate, 20, 70);
                 LogControlHelper.debugLog("[Debug] Applied Canny edge detection to highlight contours.");
 
-                // デバッグ出力
-                Cv2.ImWrite("scaled_target.png", scaledTarget);
-                Cv2.ImWrite("scaled_template.png", scaledTemplate);
+                //// デバッグ出力
+                //Cv2.ImWrite("scaled_target.png", scaledTarget);
+                //Cv2.ImWrite("scaled_template.png", scaledTemplate);
             }
 
             // テンプレートマッチングを実行し、結果を resultMat に格納
@@ -177,6 +159,40 @@ namespace ProcessBase.Helpers
             }
 
             return imageStatus;
+        }
+
+        private bool CheckBorder(Rect borderRect, ImageResult imageResult, CheckBorderType checkBorderType = CheckBorderType.None)
+        {
+            switch (checkBorderType)
+            {
+                case CheckBorderType.None:
+                    return true;
+                case CheckBorderType.In:
+                    // 境界内の場合の条件
+                    if (imageResult.X < borderRect.Left || imageResult.X > borderRect.Right)
+                    {
+                        return false;
+                    }
+
+                    if (imageResult.Y < borderRect.Top || imageResult.Y > borderRect.Bottom)
+                    {
+                        return false;
+                    }
+
+                    return true;
+                case CheckBorderType.Out:
+                    // 境界外の場合の条件
+                    if (imageResult.X >= borderRect.Left && imageResult.X <= borderRect.Right &&
+                        imageResult.Y >= borderRect.Top && imageResult.Y <= borderRect.Bottom)
+                    {
+                        return false;
+                    }
+
+                    return true;
+                default:
+                    return true;
+
+            }
         }
     }
 }
