@@ -83,4 +83,11 @@
     </None>
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Images\Bubble\Red\" />
+    <Folder Include="Images\Bubble\Green\" />
+    <Folder Include="Images\Bubble\Blue\" />
+    <Folder Include="Images\Bubble\Yellow\" />
+  </ItemGroup>
+
 </Project>

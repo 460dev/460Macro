@@ -11,8 +11,9 @@ using System.Threading.Tasks;
 using static System.Formats.Asn1.AsnWriter;
 using System.Dynamic;
 using NLog.LayoutRenderers.Wrappers;
+using ProcessBase.Helpers;
 
-namespace ProcessBase.Helpers
+namespace IdleonMacro.Helpers
 {
     public class GamingHelper : IDisposable
     {
@@ -36,9 +37,15 @@ namespace ProcessBase.Helpers
         public IntPtr WindowHandle { get; private set; }
         private OpenCVSharpHelper OpenCVSharpHelper;
 
-        public const string WindowTitle = "Legends Of Idleon";
         private readonly int WindowWidth;
         private readonly int WindowHeight;
+
+        public readonly Rect GamingFrame = new Rect(
+            X: 30,
+            Y: 44,
+            Width: GamingWidth,
+            Height: GamingHeight
+        );
 
         private const int GameX = 30;
         private const int GameY = 44;
@@ -50,8 +57,8 @@ namespace ProcessBase.Helpers
             WindowHandle = windowHandle;
             OpenCVSharpHelper = new OpenCVSharpHelper();
 
-            WindowWidth = Constants.Window.WindowWidth;
-            WindowHeight = Constants.Window.WindowHeight;
+            WindowWidth = ProcessBase.Constants.Window.WindowWidth;
+            WindowHeight = ProcessBase.Constants.Window.WindowHeight;
         }
 
 #nullable enable
@@ -62,7 +69,7 @@ namespace ProcessBase.Helpers
 
         private int SqurrielLoopCount;
         private int GetWindowRectCount;
-        private Constants.Screen.ScreenStatus ScreenStatus;
+        private ProcessBase.Constants.Screen.ScreenStatus ScreenStatus;
 
         public void Start(CancellationToken cancellationToken, bool isOverlay)
         {
@@ -70,7 +77,7 @@ namespace ProcessBase.Helpers
 
             SqurrielLoopCount = 0;
             GetWindowRectCount = 0;
-            ScreenStatus = Constants.Screen.ScreenStatus.None;
+            ScreenStatus = ProcessBase.Constants.Screen.ScreenStatus.None;
 
             while (!cancellationToken.IsCancellationRequested)
             {
@@ -88,16 +95,16 @@ namespace ProcessBase.Helpers
 
                 switch (ScreenStatus)
                 {
-                    case Constants.Screen.ScreenStatus.None:
+                    case ProcessBase.Constants.Screen.ScreenStatus.None:
                         NoneProcess();
                         break;
-                    case Constants.Screen.ScreenStatus.CodexQuikRef:
+                    case ProcessBase.Constants.Screen.ScreenStatus.CodexQuikRef:
                         CodexQuikRefProcess(bounds, isOverlay);
                         break;
-                    case Constants.Screen.ScreenStatus.CodexEtc:
+                    case ProcessBase.Constants.Screen.ScreenStatus.CodexEtc:
                         CodexEtcProcess(bounds, isOverlay);
                         break;
-                    case Constants.Screen.ScreenStatus.Gaming:
+                    case ProcessBase.Constants.Screen.ScreenStatus.Gaming:
                         GamingProcess(bounds, isOverlay);
                         break;
                     default:
@@ -123,51 +130,78 @@ namespace ProcessBase.Helpers
             _cancellationTokenSource?.Cancel();
         }
 
-        private Constants.Screen.ScreenStatus GetScreenStatus(WindowAPIHelper.RECT bounds, bool isOverlay)
+        private ProcessBase.Constants.Screen.ScreenStatus GetScreenStatus(WindowAPIHelper.RECT bounds, bool isOverlay)
         {
-            ImageResult quikRefDisableResult = CheckImageProcess(bounds, 0, 0, WindowWidth, WindowHeight, ImagePath.QuikRefDisableImagePath, threshold: 0.99, isOverlay: isOverlay);
+            ImageResult quikRefDisableResult = CheckImageProcess(GetTargetRect(bounds, 0, 0, WindowWidth, WindowHeight),
+                                                                 new ReferenceImage(ImagePath.QuikRefDisableImagePath),
+                                                                 new ComparisonImageOption(threshold: 0.99));
             if (quikRefDisableResult.Status)
             {
-                return Constants.Screen.ScreenStatus.CodexEtc;
+                return ProcessBase.Constants.Screen.ScreenStatus.CodexEtc;
             }
 
-            ImageResult quikRefMenuResult = CheckImageProcess(bounds, 0, 0, WindowWidth, WindowHeight, ImagePath.QuikRefMenuImagePath, threshold: 0.9, isOverlay: isOverlay);
+            ImageResult quikRefMenuResult = CheckImageProcess(GetTargetRect(bounds, 0, 0, WindowWidth, WindowHeight),
+                                                              new ReferenceImage(ImagePath.QuikRefMenuImagePath),
+                                                              new ComparisonImageOption(threshold: 0.9));
             if (quikRefMenuResult.Status)
             {
-                return Constants.Screen.ScreenStatus.CodexQuikRef;
+                return ProcessBase.Constants.Screen.ScreenStatus.CodexQuikRef;
             }
 
-            ImageResult logBookResult = CheckImageProcess(bounds, 0, 0, WindowWidth, WindowHeight, ImagePath.LogBookImagePath, threshold: 0.9, isOverlay: isOverlay);
+            ImageResult logBookResult = CheckImageProcess(GetTargetRect(bounds, 0, 0, WindowWidth, WindowHeight),
+                                                          new ReferenceImage(ImagePath.LogBookImagePath),
+                                                          new ComparisonImageOption(threshold: 0.9));
             if (logBookResult.Status)
             {
-                return Constants.Screen.ScreenStatus.Gaming;
+                return ProcessBase.Constants.Screen.ScreenStatus.Gaming;
             }
 
-            return Constants.Screen.ScreenStatus.None;
+            return ProcessBase.Constants.Screen.ScreenStatus.None;
         }
 
         private void GamingProcess(WindowAPIHelper.RECT bounds, bool isOverlay)
         {
-            ImageResult harvestResult = CheckImageProcess(bounds, GameX, GameY, GamingWidth, GamingHeight, ImagePath.HarvestAllImagePath, threshold: 0.7, isOverlay: isOverlay);
+            ImageResult harvestResult = CheckImageProcess(GetTargetRect(bounds, GameX, GameY, GamingWidth, GamingHeight),
+                                                          new ReferenceImage(ImagePath.HarvestAllImagePath),
+                                                          new ComparisonImageOption(threshold: 0.7),
+                                                          GetGamingBorderRect(bounds),
+                                                          checkBorderType: OpenCVSharpHelper.CheckBorderType.Out);
+
             if (harvestResult.Status)
             {
                 BackGroundEvent.SendClickToWindowAsync(WindowHandle, harvestResult.X - bounds.Left, harvestResult.Y - bounds.Top).ConfigureAwait(false);
             }
 
-            ImageResult sprinklerMaxResult = CheckImageProcess(bounds, 0, 0, WindowWidth, WindowHeight, ImagePath.SprinklerMaxImagePath, threshold: 0.7, scale: 0.8, isOverlay: isOverlay); // Sprinkler max
+            ImageResult sprinklerMaxResult = CheckImageProcess(GetTargetRect(bounds, GameX, GameY, GamingWidth, GamingHeight),
+                                                               new ReferenceImage(ImagePath.SprinklerMaxImagePath),
+                                                               new ComparisonImageOption(threshold: 0.7, scale:0.8),
+                                                               GetGamingBorderRect(bounds),
+                                                               checkBorderType: OpenCVSharpHelper.CheckBorderType.Out); // Sprinkler max
             if (!sprinklerMaxResult.Status)
             {
-                ImageResult chemicalResult = CheckImageProcess(bounds, GameX, GameY, GamingWidth, GamingHeight, ImagePath.ChemicalImagePath, threshold: 0.35, scale: 0.9, isOverlay: isOverlay); // Chemical
+                ImageResult chemicalResult = CheckImageProcess(GetTargetRect(bounds, GameX, GameY, GamingWidth, GamingHeight),
+                                                               new ReferenceImage(ImagePath.ChemicalImagePath),
+                                                               new ComparisonImageOption(threshold: 0.35, scale: 0.9),
+                                                               GetGamingBorderRect(bounds),
+                                                               checkBorderType: OpenCVSharpHelper.CheckBorderType.Out); // Chemical
                 if (chemicalResult.Status)
                 {
                     BackGroundEvent.SendClickToWindowAsync(WindowHandle, chemicalResult.X - bounds.Left, chemicalResult.Y - bounds.Top).ConfigureAwait(false);
                 }
             }
 
-            ImageResult number2020Result = CheckImageProcess(bounds, GameX, GameY, GamingWidth, GamingHeight, ImagePath.Number2020ImagePath, threshold: 0.9, isOverlay: isOverlay); // 2020 number
+            ImageResult number2020Result = CheckImageProcess(GetTargetRect(bounds, GameX, GameY, GamingWidth, GamingHeight),
+                                                             new ReferenceImage(ImagePath.Number2020ImagePath),
+                                                             new ComparisonImageOption(threshold: 0.9),
+                                                             GetGamingBorderRect(bounds),
+                                                             checkBorderType: OpenCVSharpHelper.CheckBorderType.Out); // 2020 number
             if (!number2020Result.Status)
             {
-                ImageResult sprinklerResult = CheckImageProcess(bounds, GameX, GameY, GamingWidth, GamingHeight, ImagePath.SprinklerImagePath, threshold: 0.7, isOverlay: isOverlay); // Sprinkler
+                ImageResult sprinklerResult = CheckImageProcess(GetTargetRect(bounds, GameX, GameY, GamingWidth, GamingHeight),
+                                                                new ReferenceImage(ImagePath.SprinklerImagePath),
+                                                                new ComparisonImageOption(threshold: 0.7),
+                                                                GetGamingBorderRect(bounds),
+                                                                checkBorderType: OpenCVSharpHelper.CheckBorderType.Out); // Sprinkler
                 if (sprinklerResult.Status)
                 {
                     BackGroundEvent.SendClickToWindowAsync(WindowHandle, sprinklerResult.X - bounds.Left, sprinklerResult.Y - bounds.Top).ConfigureAwait(false);
@@ -176,21 +210,31 @@ namespace ProcessBase.Helpers
 
             if (SqurrielLoopCount > 10)
             {
-                ImageResult squirrelResult = CheckImageProcess(bounds, GameX, GameY, GamingWidth, GamingHeight, ImagePath.SquirrelImagePath, threshold: 0.5, isOverlay: isOverlay);     // Squirrel
+                ImageResult squirrelResult = CheckImageProcess(GetTargetRect(bounds, GameX, GameY, GamingWidth, GamingHeight),
+                                                               new ReferenceImage(ImagePath.SquirrelImagePath),
+                                                               new ComparisonImageOption(threshold: 0.5),
+                                                               GetGamingBorderRect(bounds),
+                                                               checkBorderType: OpenCVSharpHelper.CheckBorderType.Out);     // Squirrel
                 if (squirrelResult.Status)
                 {
                     BackGroundEvent.SendClickToWindowAsync(WindowHandle, squirrelResult.X - bounds.Left, squirrelResult.Y - bounds.Top).ConfigureAwait(false);
+                    SqurrielLoopCount = 0;
                 }
-                SqurrielLoopCount = 0;
             }
 
-            ImageResult shovelResult = CheckImageProcess(bounds, GameX, GameY, GamingWidth, GamingHeight, ImagePath.ShovelNoEffectImagePath, threshold: 0.5, isOverlay: isOverlay); // Shovel
+            ImageResult shovelResult = CheckImageProcess(GetTargetRect(bounds, GameX, GameY, GamingWidth, GamingHeight),
+                                                         new ReferenceImage(ImagePath.ShovelNoEffectImagePath),
+                                                         new ComparisonImageOption(threshold: 0.5),
+                                                          GetGamingBorderRect(bounds),
+                                                         checkBorderType: OpenCVSharpHelper.CheckBorderType.Out); // Shovel
             if (shovelResult.Status)
             {
                 BackGroundEvent.SendClickToWindowAsync(WindowHandle, shovelResult.X - bounds.Left, shovelResult.Y - bounds.Top).ConfigureAwait(false);
             }
 
-            ImageResult cancelButtonResult = CheckImageProcess(bounds, GameX, GameY, GamingWidth, GamingHeight, ImagePath.CancelBottunImagePath, threshold: 0.8, isOverlay: isOverlay);   // Cancel button
+            ImageResult cancelButtonResult = CheckImageProcess(GetTargetRect(bounds, 20, GameY, GamingWidth, GamingHeight),
+                                                               new ReferenceImage(ImagePath.CancelBottunImagePath),
+                                                               new ComparisonImageOption(threshold: 0.8));   // Cancel button
             if (cancelButtonResult.Status)
             {
                 BackGroundEvent.SendClickToWindowAsync(WindowHandle, cancelButtonResult.X - bounds.Left, cancelButtonResult.Y - bounds.Top).ConfigureAwait(false);
@@ -206,7 +250,9 @@ namespace ProcessBase.Helpers
 
         private void CodexEtcProcess(WindowAPIHelper.RECT bounds, bool isOverlay = false)
         {
-            ImageResult quikRefResult = CheckImageProcess(bounds, 0, 0, bounds.Right - bounds.Left, bounds.Bottom - bounds.Top, ImagePath.QuikRefDisableImagePath, threshold: 0.8, isOverlay: isOverlay);
+            ImageResult quikRefResult = CheckImageProcess(GetTargetRect(bounds, 0, 0, bounds.Right - bounds.Left, bounds.Bottom - bounds.Top),
+                                                          new ReferenceImage(ImagePath.QuikRefDisableImagePath),
+                                                          new ComparisonImageOption(threshold: 0.8));
             if (quikRefResult.Status)
             {
                 BackGroundEvent.SendClickToWindowAsync(WindowHandle, quikRefResult.X - bounds.Left, quikRefResult.Y - bounds.Top).ConfigureAwait(false);
@@ -215,32 +261,42 @@ namespace ProcessBase.Helpers
 
         private void CodexQuikRefProcess(WindowAPIHelper.RECT bounds, bool isOverlay = false)
         {
-            ImageResult gamingResult = CheckImageProcess(bounds, 0, 0, bounds.Right - bounds.Left, bounds.Bottom - bounds.Top, ImagePath.GamingImagePath, threshold: 0.8, isOverlay: isOverlay);
+            ImageResult gamingResult = CheckImageProcess(GetTargetRect(bounds, 0, 0, bounds.Right - bounds.Left, bounds.Bottom - bounds.Top),
+                                                         new ReferenceImage(ImagePath.GamingImagePath),
+                                                         new ComparisonImageOption(threshold: 0.8));
             if (gamingResult.Status)
             {
                 BackGroundEvent.SendClickToWindowAsync(WindowHandle, gamingResult.X - bounds.Left, gamingResult.Y - bounds.Top).ConfigureAwait(false);
             }
         }
 
-        private ImageResult CheckImageProcess(WindowAPIHelper.RECT bounds, int offsetX, int offsetY, int width, int height, string imagePath, double threshold, bool isOverlay, double scale = 1.0)
+        private ImageResult CheckImageProcess(Rect targetRect,
+                                              ReferenceImage referenceImage,
+                                              ComparisonImageOption imageOption,
+                                              Rect borderRect = new(),
+                                              OpenCVSharpHelper.CheckBorderType checkBorderType = OpenCVSharpHelper.CheckBorderType.None)
         {
-            Rect targetRect = new(
-                X: bounds.Left + offsetX,
-                Y: bounds.Top + offsetY,
-                Width: width,
-                Height: height
-            );
+            return OpenCVSharpHelper.CheckImage(borderRect, targetRect, referenceImage, imageOption, checkBorderType);
+        }
 
-            Rect borderRect = new(
+        private Rect GetGamingBorderRect(WindowAPIHelper.RECT bounds)
+        {
+            return new Rect(
                 X: bounds.Left + 34,
                 Y: bounds.Top + 380,
                 Width: 110,
                 Height: 90
             );
+        }
 
-            ComparisonImageOption imageOption = new(threshold: threshold, scale: scale);
-
-            return OpenCVSharpHelper.CheckImage(borderRect, targetRect, imagePath, imageOption, isOverlay);
+        private Rect GetTargetRect(WindowAPIHelper.RECT bounds, int offsetX, int offsetY, int width, int height)
+        {
+            return new Rect(
+                X: bounds.Left + offsetX,
+                Y: bounds.Top + offsetY,
+                Width: width,
+                Height: height
+            );
         }
 
         private WindowAPIHelper.RECT InitializeWindow()

@@ -1,10 +1,6 @@
 ﻿using ProcessBase.Helpers;
 using OpenCvSharp;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.IO;
 
 namespace ProcessBase.Models
 {
@@ -20,6 +16,12 @@ namespace ProcessBase.Models
             LoadImage();
         }
 
+        public ReferenceImage(byte[] imageBytes)
+        {
+            _imagePath = string.Empty;
+            LoadImage(imageBytes);
+        }
+
         // 画像を読み込むメソッド
         private void LoadImage()
         {
@@ -33,6 +35,18 @@ namespace ProcessBase.Models
             else
             {
                 LogControlHelper.debugLog($"[ReferenceImage] エラー: 画像 '{_imagePath}' が見つかりません。");
+            }
+        }
+
+        private void LoadImage(byte[] imageBytes)
+        {
+            if (imageBytes != null && imageBytes.Length > 0)
+            {
+                Image = Mat.FromImageData(imageBytes, ImreadModes.Color);
+            }
+            else
+            {
+                throw new ArgumentException("画像データが空です。");
             }
         }
 
