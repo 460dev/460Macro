@@ -7,10 +7,11 @@ using ProcessBase.Events;
 using ProcessBase.Helpers;
 using ProcessBase.Models;
 using OpenCvSharp;
+using IdleonMacro.Helpers;
 
-namespace ProcessBase
+namespace IdleonMacro
 {
-    class IdleonGamingMacro
+    class IdleonMacro
     {
         public const string WindowTitle = "Legends Of Idleon";
 

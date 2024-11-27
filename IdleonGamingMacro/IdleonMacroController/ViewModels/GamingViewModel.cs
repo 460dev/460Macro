@@ -8,6 +8,7 @@ using ProcessBase.Helpers;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
+using IdleonMacro.Helpers;
 
 #nullable enable
 
@@ -15,8 +16,6 @@ namespace IdleonMacroController.ViewModels
 {
     public class GamingViewModel : BindableBase
     {
-        public const string WindowTitle = "Legends Of Idleon";
-
         public DelegateCommand StartStopCommand { get; private set; }
 
         public ReactiveProperty<string> StartStopText { get; set; } = new ReactiveProperty<string>("Start");
@@ -34,7 +33,7 @@ namespace IdleonMacroController.ViewModels
 
         private void StartStop()
         {
-            IntPtr windowHandle = WindowAPIHelper.FindWindow(null, WindowTitle);
+            IntPtr windowHandle = WindowAPIHelper.FindWindow(null, ProcessBase.Constants.Window.WindowTitle);
             if (windowHandle == IntPtr.Zero)
             {
                 LogControlHelper.debugLog("[IdleonGaming] Windowが見つかりませんでした。");

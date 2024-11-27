@@ -17,14 +17,13 @@ namespace ProcessBase.Helpers
             Out = 2,
         }
 
-        public ImageResult CheckImage(Rect borderRect, Rect targetRect, string imagePath, ComparisonImageOption imageOption, CheckBorderType checkBorderType = CheckBorderType.None)
+        public ImageResult CheckImage(Rect borderRect, Rect targetRect, ReferenceImage referenceImage, ComparisonImageOption imageOption, CheckBorderType checkBorderType = CheckBorderType.None)
         {
             ImageResult imageResult = new()
             {
                 Status = false
             };
 
-            ReferenceImage referenceImage = new(imagePath);
             CroppedImage croppedImage = new(targetRect.X, targetRect.Y, targetRect.Width, targetRect.Height);
 
             var resultMat = ComparisonImage(referenceImage.Image, croppedImage.Image, imageOption);
@@ -32,7 +31,7 @@ namespace ProcessBase.Helpers
             if (resultMat.Status)
             {
                 // 中心座標を計算
-                LogControlHelper.debugLog("[IdleonGaming] " + imagePath + " が見つかりました。");
+                LogControlHelper.debugLog("[IdleonGaming] 対象の画像が見つかりました。");
                 imageResult.X = targetRect.X + (resultMat.ImageRect.X + (resultMat.ImageRect.Width / 2));
                 imageResult.Y = targetRect.Y + (resultMat.ImageRect.Y + (resultMat.ImageRect.Height / 2));
                 imageResult.OverlayX = targetRect.X + resultMat.ImageRect.X;
@@ -50,7 +49,7 @@ namespace ProcessBase.Helpers
             }
             else
             {
-                LogControlHelper.debugLog("[IdleonGaming] " + imagePath + " が見つかりませんでした。");
+                LogControlHelper.debugLog("[IdleonGaming] 対象の画像が見つかりませんでした。");
             }
 
             return imageResult;

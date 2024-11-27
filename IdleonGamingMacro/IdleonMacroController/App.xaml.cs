@@ -1,5 +1,6 @@
 ﻿using IdleonMacroController.ViewModels;
 using IdleonMacroController.Views;
+using IdleonMacroController.Views.Bubble;
 using IdleonMacroController.Views.DebugMode;
 using IdleonMacroController.Views.Gaming;
 using IdleonMacroController.Views.Home;
@@ -26,6 +27,7 @@ namespace IdleonMacroController
             containerRegistry.RegisterForNavigation<Home>("Home");
             containerRegistry.RegisterForNavigation<Gaming>("Gaming");
             containerRegistry.RegisterForNavigation<DebugMode>("DebugMode");
+            containerRegistry.RegisterForNavigation<Bubble>("Bubble");
         }
 
         protected override void ConfigureViewModelLocator()
@@ -35,6 +37,7 @@ namespace IdleonMacroController
             ViewModelLocationProvider.Register<Menu, MenuViewModel>();
             ViewModelLocationProvider.Register<Gaming, GamingViewModel>();
             ViewModelLocationProvider.Register<DebugMode, DebugModeViewModel>();
+            ViewModelLocationProvider.Register<Bubble, BubbleViewModel>();
         }
     }
 }
