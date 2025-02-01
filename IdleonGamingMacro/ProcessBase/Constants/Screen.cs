@@ -14,6 +14,8 @@ namespace ProcessBase.Constants
             CodexQuikRef = 1,
             CodexEtc = 2,
             Gaming = 3,
+            Brewing = 4,
+            AlchemyEtc = 5,
         }
     }
 }
