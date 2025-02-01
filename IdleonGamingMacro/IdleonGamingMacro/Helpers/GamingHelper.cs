@@ -22,6 +22,7 @@ namespace IdleonMacro.Helpers
             public const string HarvestAllImagePath = "harvest_all.png";
             public const string SprinklerMaxImagePath = "sprinkler_max.png";
             public const string ChemicalImagePath = "chemical.png";
+            public const string ChemicalMaxImagePath = "chemical_max.png";
             public const string Number2020ImagePath = "20_20.png";
             public const string SprinklerImagePath = "sprinkler.png";
             public const string ShovelNoEffectImagePath = "shovel_no_effect.png";
@@ -91,7 +92,7 @@ namespace IdleonMacro.Helpers
 
                 // 画面全体から対象画像を探してScreenStatesを更新する
                 ScreenStatus = GetScreenStatus(bounds, isOverlay);
-                Task.Delay(200);
+                Task.Delay(500).Wait();
 
                 switch (ScreenStatus)
                 {
@@ -169,43 +170,81 @@ namespace IdleonMacro.Helpers
 
             if (harvestResult.Status)
             {
-                BackGroundEvent.SendClickToWindowAsync(WindowHandle, harvestResult.X - bounds.Left, harvestResult.Y - bounds.Top).ConfigureAwait(false);
+                BackGroundEvent.SendClickToWindowAsync(WindowHandle, harvestResult.X - bounds.Left, harvestResult.Y - bounds.Top).ConfigureAwait(true);
+                Task.Delay(200).Wait();
             }
 
-            ImageResult sprinklerMaxResult = CheckImageProcess(GetTargetRect(bounds, GameX, GameY, GamingWidth, GamingHeight),
-                                                               new ReferenceImage(ImagePath.SprinklerMaxImagePath),
-                                                               new ComparisonImageOption(threshold: 0.7, scale:0.8),
-                                                               GetGamingBorderRect(bounds),
-                                                               checkBorderType: OpenCVSharpHelper.CheckBorderType.Out); // Sprinkler max
-            if (!sprinklerMaxResult.Status)
-            {
-                ImageResult chemicalResult = CheckImageProcess(GetTargetRect(bounds, GameX, GameY, GamingWidth, GamingHeight),
+            //ImageResult sprinklerMaxResult = CheckImageProcess(GetTargetRect(bounds, GameX, GameY, GamingWidth, GamingHeight),
+            //                                                   new ReferenceImage(ImagePath.SprinklerMaxImagePath),
+            //                                                   new ComparisonImageOption(threshold: 0.7, scale:0.8),
+            //                                                   GetGamingBorderRect(bounds),
+            //                                                   checkBorderType: OpenCVSharpHelper.CheckBorderType.Out); // Sprinkler max
+            //if (!sprinklerMaxResult.Status)
+            //{
+            //    ImageResult chemicalResult = CheckImageProcess(GetTargetRect(bounds, GameX, GameY, GamingWidth, GamingHeight),
+            //                                                   new ReferenceImage(ImagePath.ChemicalImagePath),
+            //                                                   new ComparisonImageOption(threshold: 0.30, scale: 0.9),
+            //                                                   GetGamingBorderRect(bounds),
+            //                                                   checkBorderType: OpenCVSharpHelper.CheckBorderType.Out); // Chemical
+            //    if (chemicalResult.Status)
+            //    {
+            //        BackGroundEvent.SendClickToWindowAsync(WindowHandle, chemicalResult.X - bounds.Left, chemicalResult.Y - bounds.Top).ConfigureAwait(true);
+            //        Task.Delay(100).Wait();
+            //    }
+            //}
+
+            ImageResult chemicalResult = CheckImageProcess(GetTargetRect(bounds, GameX, GameY, GamingWidth, GamingHeight),
                                                                new ReferenceImage(ImagePath.ChemicalImagePath),
-                                                               new ComparisonImageOption(threshold: 0.35, scale: 0.9),
+                                                               new ComparisonImageOption(threshold: 0.29, scale: 0.9),
                                                                GetGamingBorderRect(bounds),
                                                                checkBorderType: OpenCVSharpHelper.CheckBorderType.Out); // Chemical
-                if (chemicalResult.Status)
+            if (chemicalResult.Status)
+            {
+                BackGroundEvent.SendClickToWindowAsync(WindowHandle, chemicalResult.X - bounds.Left, chemicalResult.Y - bounds.Top).ConfigureAwait(true);
+                Task.Delay(200).Wait();
+            }
+            else
+            {
+                ImageResult chemicalMaxResult = CheckImageProcess(GetTargetRect(bounds, GameX, GameY, GamingWidth, GamingHeight),
+                                                              new ReferenceImage(ImagePath.ChemicalMaxImagePath),
+                                                              new ComparisonImageOption(threshold: 0.35, scale: 0.9),
+                                                              GetGamingBorderRect(bounds),
+                                                              checkBorderType: OpenCVSharpHelper.CheckBorderType.Out); // Chemical
+                if (chemicalMaxResult.Status)
                 {
-                    BackGroundEvent.SendClickToWindowAsync(WindowHandle, chemicalResult.X - bounds.Left, chemicalResult.Y - bounds.Top).ConfigureAwait(false);
+                    BackGroundEvent.SendClickToWindowAsync(WindowHandle, chemicalMaxResult.X - bounds.Left, chemicalMaxResult.Y - bounds.Top).ConfigureAwait(true);
+                    Task.Delay(200).Wait();
                 }
             }
 
-            ImageResult number2020Result = CheckImageProcess(GetTargetRect(bounds, GameX, GameY, GamingWidth, GamingHeight),
-                                                             new ReferenceImage(ImagePath.Number2020ImagePath),
-                                                             new ComparisonImageOption(threshold: 0.9),
-                                                             GetGamingBorderRect(bounds),
-                                                             checkBorderType: OpenCVSharpHelper.CheckBorderType.Out); // 2020 number
-            if (!number2020Result.Status)
-            {
-                ImageResult sprinklerResult = CheckImageProcess(GetTargetRect(bounds, GameX, GameY, GamingWidth, GamingHeight),
+            //ImageResult number2020Result = CheckImageProcess(GetTargetRect(bounds, GameX, GameY, GamingWidth, GamingHeight),
+            //                                                 new ReferenceImage(ImagePath.Number2020ImagePath),
+            //                                                 new ComparisonImageOption(threshold: 0.9),
+            //                                                 GetGamingBorderRect(bounds),
+            //                                                 checkBorderType: OpenCVSharpHelper.CheckBorderType.Out); // 2020 number
+            //if (!number2020Result.Status)
+            //{
+            //    ImageResult sprinklerResult = CheckImageProcess(GetTargetRect(bounds, GameX, GameY, GamingWidth, GamingHeight),
+            //                                                    new ReferenceImage(ImagePath.SprinklerImagePath),
+            //                                                    new ComparisonImageOption(threshold: 0.7),
+            //                                                    GetGamingBorderRect(bounds),
+            //                                                    checkBorderType: OpenCVSharpHelper.CheckBorderType.Out); // Sprinkler
+            //    if (sprinklerResult.Status)
+            //    {
+            //        BackGroundEvent.SendClickToWindowAsync(WindowHandle, sprinklerResult.X - bounds.Left, sprinklerResult.Y - bounds.Top).ConfigureAwait(true);
+            //        Task.Delay(100).Wait();
+            //    }
+            //}
+
+            ImageResult sprinklerResult = CheckImageProcess(GetTargetRect(bounds, GameX, GameY, GamingWidth, GamingHeight),
                                                                 new ReferenceImage(ImagePath.SprinklerImagePath),
                                                                 new ComparisonImageOption(threshold: 0.7),
                                                                 GetGamingBorderRect(bounds),
                                                                 checkBorderType: OpenCVSharpHelper.CheckBorderType.Out); // Sprinkler
-                if (sprinklerResult.Status)
-                {
-                    BackGroundEvent.SendClickToWindowAsync(WindowHandle, sprinklerResult.X - bounds.Left, sprinklerResult.Y - bounds.Top).ConfigureAwait(false);
-                }
+            if (sprinklerResult.Status)
+            {
+                BackGroundEvent.SendClickToWindowAsync(WindowHandle, sprinklerResult.X - bounds.Left, sprinklerResult.Y - bounds.Top).ConfigureAwait(true);
+                Task.Delay(200).Wait();
             }
 
             if (SqurrielLoopCount > 10)
@@ -217,7 +256,8 @@ namespace IdleonMacro.Helpers
                                                                checkBorderType: OpenCVSharpHelper.CheckBorderType.Out);     // Squirrel
                 if (squirrelResult.Status)
                 {
-                    BackGroundEvent.SendClickToWindowAsync(WindowHandle, squirrelResult.X - bounds.Left, squirrelResult.Y - bounds.Top).ConfigureAwait(false);
+                    BackGroundEvent.SendClickToWindowAsync(WindowHandle, squirrelResult.X - bounds.Left, squirrelResult.Y - bounds.Top).ConfigureAwait(true);
+                    Task.Delay(200).Wait();
                     SqurrielLoopCount = 0;
                 }
             }
@@ -229,7 +269,8 @@ namespace IdleonMacro.Helpers
                                                          checkBorderType: OpenCVSharpHelper.CheckBorderType.Out); // Shovel
             if (shovelResult.Status)
             {
-                BackGroundEvent.SendClickToWindowAsync(WindowHandle, shovelResult.X - bounds.Left, shovelResult.Y - bounds.Top).ConfigureAwait(false);
+                BackGroundEvent.SendClickToWindowAsync(WindowHandle, shovelResult.X - bounds.Left, shovelResult.Y - bounds.Top).ConfigureAwait(true);
+                Task.Delay(200).Wait();
             }
 
             ImageResult cancelButtonResult = CheckImageProcess(GetTargetRect(bounds, 20, GameY, GamingWidth, GamingHeight),
@@ -237,7 +278,8 @@ namespace IdleonMacro.Helpers
                                                                new ComparisonImageOption(threshold: 0.8));   // Cancel button
             if (cancelButtonResult.Status)
             {
-                BackGroundEvent.SendClickToWindowAsync(WindowHandle, cancelButtonResult.X - bounds.Left, cancelButtonResult.Y - bounds.Top).ConfigureAwait(false);
+                BackGroundEvent.SendClickToWindowAsync(WindowHandle, cancelButtonResult.X - bounds.Left, cancelButtonResult.Y - bounds.Top).ConfigureAwait(true);
+                Task.Delay(200).Wait();
             }
 
             SqurrielLoopCount++;
@@ -245,7 +287,8 @@ namespace IdleonMacro.Helpers
 
         private void NoneProcess()
         {
-            BackGroundEvent.SendKeyToWindowAsync(WindowHandle, 'C').ConfigureAwait(false);
+            BackGroundEvent.SendKeyToWindowAsync(WindowHandle, 'C').ConfigureAwait(true);
+            Task.Delay(100).Wait();
         }
 
         private void CodexEtcProcess(WindowAPIHelper.RECT bounds, bool isOverlay = false)
@@ -255,7 +298,8 @@ namespace IdleonMacro.Helpers
                                                           new ComparisonImageOption(threshold: 0.8));
             if (quikRefResult.Status)
             {
-                BackGroundEvent.SendClickToWindowAsync(WindowHandle, quikRefResult.X - bounds.Left, quikRefResult.Y - bounds.Top).ConfigureAwait(false);
+                BackGroundEvent.SendClickToWindowAsync(WindowHandle, quikRefResult.X - bounds.Left, quikRefResult.Y - bounds.Top).ConfigureAwait(true);
+                Task.Delay(100).Wait();
             }
         }
 
@@ -266,7 +310,8 @@ namespace IdleonMacro.Helpers
                                                          new ComparisonImageOption(threshold: 0.8));
             if (gamingResult.Status)
             {
-                BackGroundEvent.SendClickToWindowAsync(WindowHandle, gamingResult.X - bounds.Left, gamingResult.Y - bounds.Top).ConfigureAwait(false);
+                BackGroundEvent.SendClickToWindowAsync(WindowHandle, gamingResult.X - bounds.Left, gamingResult.Y - bounds.Top).ConfigureAwait(true);
+                Task.Delay(100).Wait();
             }
         }
 

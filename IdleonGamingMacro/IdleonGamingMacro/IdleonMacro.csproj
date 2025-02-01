@@ -14,6 +14,7 @@
     <None Remove="Images\20_20.png" />
     <None Remove="Images\cancel_button.png" />
     <None Remove="Images\chemical.png" />
+    <None Remove="Images\chemical_max.png" />
     <None Remove="Images\chemical_transparent.png" />
     <None Remove="Images\fertilizer.png" />
     <None Remove="Images\gaming.png" />
@@ -35,6 +36,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Images\chemical.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\chemical_max.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Images\chemical_transparent.png">
