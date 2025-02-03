@@ -16,6 +16,7 @@
     <None Remove="Images\chemical.png" />
     <None Remove="Images\chemical_max.png" />
     <None Remove="Images\chemical_transparent.png" />
+    <None Remove="Images\chemical_trim.png" />
     <None Remove="Images\fertilizer.png" />
     <None Remove="Images\gaming.png" />
     <None Remove="Images\harvest_all.png" />
@@ -42,6 +43,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Images\chemical_transparent.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\chemical_trim.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Images\gaming.png">
