@@ -21,7 +21,7 @@ namespace IdleonMacro.Helpers
         {
             public const string HarvestAllImagePath = "harvest_all.png";
             public const string SprinklerMaxImagePath = "sprinkler_max.png";
-            public const string ChemicalImagePath = "chemical.png";
+            public const string ChemicalImagePath = "chemical_trim.png";
             public const string ChemicalMaxImagePath = "chemical_max.png";
             public const string Number2020ImagePath = "20_20.png";
             public const string SprinklerImagePath = "sprinkler.png";
@@ -207,7 +207,7 @@ namespace IdleonMacro.Helpers
             {
                 ImageResult chemicalMaxResult = CheckImageProcess(GetTargetRect(bounds, GameX, GameY, GamingWidth, GamingHeight),
                                                               new ReferenceImage(ImagePath.ChemicalMaxImagePath),
-                                                              new ComparisonImageOption(threshold: 0.35, scale: 0.9),
+                                                              new ComparisonImageOption(threshold: 0.29, scale: 0.9),
                                                               GetGamingBorderRect(bounds),
                                                               checkBorderType: OpenCVSharpHelper.CheckBorderType.Out); // Chemical
                 if (chemicalMaxResult.Status)
